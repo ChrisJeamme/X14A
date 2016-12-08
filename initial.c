@@ -25,7 +25,7 @@
 /* 3 pour une suppression */
 
 void terminaison_fils(int signal);
-int demande_archive();
+char demande_archive();
 
 
 pid_t *liste_pid;
@@ -109,12 +109,12 @@ void terminaison_fils(int signal)
     }
 }
 
-int demande_archive()
+char demande_archive()
 {
     int nb = rand()%10 + 1;
     if (nb < 7)
-        return 1;    //consultation
+        return 'c';    //consultation
     if (nb < 10)
-        return 2;   //publication
-    return 3;       //effacement
+        return 'p';   //publication
+    return 'e';       //effacement
 }

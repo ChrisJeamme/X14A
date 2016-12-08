@@ -9,6 +9,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <string.h>
 
 
 /*********************************/
@@ -28,11 +29,27 @@ int main(int argc, char* argv[])
             exit(-1);
         }
     
-    while(mesboules=1)
+    int nb_archivistes = atoi(argv[1]);
+
+    char requete = argv[2][0];
+    int num_theme = atoi(argv[3]);  //Numéro du segment de mémoire contenant les articles du thème.
+
+    if (requete == 'c')     //Consultation
     {
-        ;
+        int num_article = atoi(argv[4]);    //Numéro de l'article à consulter
     }
 
+    if (requete == 'p')     //Publication
+    {
+        char texte_article[4];    //Texte de l'article
+        strcpy(texte_article, argv[4]);
+        printf("%s\n", texte_article);
+    }
+
+    if (requete == 'e')     //Effacement
+    {
+        int num_article = atoi(argv[4]);    //Numéro de l'article à effacer
+    }
 
     return 0;
 }
