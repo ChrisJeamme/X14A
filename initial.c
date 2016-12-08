@@ -22,17 +22,9 @@
 /* 1 pour une consultation */
 /* 2 pour une publication */
 /* 3 pour une suppression */
-int demande_archive()
-{
-    int nb = rand()%10 + 1;
-    if (nb < 7)
-        return 1;    //consultation
-    if (nb < 10)
-        return 2;   //publication
-    return 3;       //effacement
-}
 
 void terminaison_fils(int signal);
+int demande_archive();
 
 
 pid_t *liste_pid;
@@ -110,4 +102,14 @@ void terminaison_fils(int signal)
     {
         kill(liste_pid[i], SIGTERM);    //On envoi SIGTERM à tout les archivistes
     }
+}
+
+int demande_archive()
+{
+    int nb = rand()%10 + 1;
+    if (nb < 7)
+        return 1;    //consultation
+    if (nb < 10)
+        return 2;   //publication
+    return 3;       //effacement
 }
