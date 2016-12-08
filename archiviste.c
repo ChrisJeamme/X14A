@@ -19,13 +19,15 @@
 /*********************************/
 
 int main(int argc, char* argv[])
-{
+{    printf("%s %s %s",argv[0],argv[1],argv[2]);
+
     /*Vérification du nombre d'arguments*/
         if (argc != 3)  //Si il n'y a pas 2 arguments
         {
-            fprintf(stderr, "Erreur de nombre d'argument pour archiviste.c");
+            fprintf(stderr, "Erreur de nombre d'argument pour archiviste.c (argc = %d)\n", argc);
             exit(-1);
         }
+
 
     /* Récupération des arguments */
         int numero_ordre = atoi(argv[1]);
