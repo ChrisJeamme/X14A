@@ -27,6 +27,11 @@ int main(int argc, char* argv[])
             exit(-1);
         }
 
+    while(mesboules=1)
+    {
+        ;
+    }
+
 
     return 0;
 }
