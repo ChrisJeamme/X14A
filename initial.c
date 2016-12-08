@@ -9,6 +9,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <string.h>
 
 
 /*********************************/
@@ -37,8 +38,9 @@ void terminaison_fils(int signal);
 
 pid_t *liste_pid;
 int nb_archivistes;
+int nb_themes;
 
-int main(int argc, char* argv[])
+int main(int argc, char* argv[], char* envp[])
 {
     srand(time(NULL));
     
@@ -53,7 +55,7 @@ int main(int argc, char* argv[])
 
     /*On récupère les arguments*/
         nb_archivistes = atoi(argv[1]);
-        int nb_themes = atoi(argv[2]);
+        nb_themes = atoi(argv[2]);
 
     /*Vérification des arguments*/
         if (nb_archivistes < 2 || nb_themes < 2)
@@ -72,19 +74,25 @@ int main(int argc, char* argv[])
         {
             pid_t pid = fork();  //Création de l'archiviste
 
-            if(pid == -1) 
+            if(pid == -1)   //Erreur
             {
                 fprintf(stderr, "Erreur de fork\n");
                 exit(-1);
             }
-            if(pid == 0) 
+            if(pid == 0)    //Fils
             {
                 printf("fils (de pute)\n");
+
+                //char* arguments[] = {"0", (char*)nb_themes, NULL}; //Numéro d'ordre , Nombre de thèmes
+
+                //execve("archiviste",arguments,envp);
+
+                //free(arguments);
                 exit(-1);
             }
-            else
+            else            //Père
             {
-                liste_pid[i]=pid;
+                liste_pid[i]=pid;   //On stock le pid dans la liste
                 printf("%d\n",liste_pid[i]);
             }
         }
@@ -100,7 +108,7 @@ int main(int argc, char* argv[])
         
         while(1);
 
-    return 0;
+    return 0;  
 }
 
 void terminaison_fils(int signal)
