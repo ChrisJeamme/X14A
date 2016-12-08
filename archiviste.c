@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 
         printf("Salut ! Moi c'est le fils %d, ordre:%d nb_themes:%d", getpid(), numero_ordre, nombre_themes);
 
-    while(1);
+    //while(1);
 
     return 0;
 }
