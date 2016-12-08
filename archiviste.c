@@ -19,7 +19,8 @@
 /*********************************/
 
 int main(int argc, char* argv[])
-{    printf("%s %s %s",argv[0],argv[1],argv[2]);
+{    
+    printf("%s %s %s",argv[0],argv[1],argv[2]);
 
     /*Vérification du nombre d'arguments*/
         if (argc != 3)  //Si il n'y a pas 2 arguments
@@ -33,9 +34,9 @@ int main(int argc, char* argv[])
         int numero_ordre = atoi(argv[1]);
         int nombre_themes = atoi(argv[2]);
 
-        printf("Salut ! Moi c'est le fils %d, ordre:%d nb_themes:%d", getpid(), numero_ordre, nombre_themes);
+        printf("Salut ! Moi c'est le fils %d, ordre:%d nb_themes:%d\n", getpid(), numero_ordre, nombre_themes);
 
-    //while(1);
+    while(1);
 
     return 0;
 }
