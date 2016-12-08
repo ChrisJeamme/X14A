@@ -21,17 +21,19 @@
 int main(int argc, char* argv[])
 {
     /*Vérification du nombre d'arguments*/
-        if (argc != 3)
+        if (argc != 3)  //Si il n'y a pas 2 arguments
         {
             fprintf(stderr, "Erreur de nombre d'argument pour archiviste.c");
             exit(-1);
         }
 
-    while(mesboules=1)
-    {
-        ;
-    }
+    /* Récupération des arguments */
+        int numero_ordre = atoi(argv[1]);
+        int nombre_themes = atoi(argv[2]);
 
+        printf("Salut ! Moi c'est le fils %d, ordre:%d nb_themes:%d", getpid(), numero_ordre, nombre_themes);
+
+    while(1);
 
     return 0;
 }
