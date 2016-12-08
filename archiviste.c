@@ -29,10 +29,22 @@ int main(int argc, char* argv[])
             exit(-1);
         }
 
-
     /* Récupération des arguments */
         int numero_ordre = atoi(argv[1]);
         int nombre_themes = atoi(argv[2]);
+
+    /* Récupération file de messages*/
+        key_t cle = ftok("journalistes.c", 'a');
+        int id = msgget(cle, 0777 | IPC_CREAT | IPC_PRIVATE | IPC_EXCL);   //ID de la file de messages   
+        if (id == -1)
+        {
+            fprintf(stderr, "Problème de transmission de messages");
+            exit(-1);
+        }
+
+        //char* message;
+        //msgrcv (id, *message, 4, IPC_NOWAIT | MSG_NOERROR);
+
 
         printf("Salut ! Moi c'est le fils %d, ordre:%d nb_themes:%d\n", getpid(), numero_ordre, nombre_themes);
 

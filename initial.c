@@ -25,7 +25,7 @@
 /* 3 pour une suppression */
 
 void terminaison_fils(int signal);
-char demande_archive();
+char* demande_archive();
 void le_gros_sigaction();
 
 pid_t *liste_pid;
@@ -61,7 +61,6 @@ int main(int argc, char* argv[], char* envp[])
     /* Création des archivistes*/
         liste_pid = malloc(nb_archivistes * sizeof(pid_t)); //pour stocker le pid de chacun des archivistes
         int i;
-        printf("\n\n%d\n\n", nb_archivistes);
         for(i=0; i<nb_archivistes; i++) 
         {
             pid_t pid = fork();  //Création de l'archiviste
@@ -75,7 +74,7 @@ int main(int argc, char* argv[], char* envp[])
             {
                 //printf("Lancement du fils %d\n", pid);
                 char* arguments[] = {"archiviste", "0", argv[2], NULL}; //Numéro d'ordre , Nombre de thèmes
-                execve("archiviste",arguments,envp);
+                execve("archiviste", arguments, envp);
                 while(1);
             }
             else            //Père
@@ -84,12 +83,45 @@ int main(int argc, char* argv[], char* envp[])
                 //printf("%d\n",liste_pid[i]);
             }
         }
-        
-    /*Gestion des signaux de terminaison des fils*/
 
+    /*Gestion des signaux de terminaison des fils*/
         le_gros_sigaction(); //Ajout de la règle pour tous les signaux sauf SIGKILL et SIGCHLD
-        
-        while(1);
+
+    /* Création des journalistes */
+        while(1)
+        {
+            pid_t pid = fork();
+            char *requete = demande_archive();
+            char *theme = "3";
+            char *texte;
+            if (requete[0]=='p')    //publication
+            {
+                texte = "zizi";     // texte de l'article
+            }
+            else 
+            {
+                texte = "12";     //numero de l'article
+            }
+
+            if(pid == -1)   //Erreur
+            {
+                fprintf(stderr, "Erreur de fork\n");
+                exit(-1);
+            }
+            if(pid == 0)    //Fils
+            {
+                //printf("Lancement du fils %d\n", pid);
+                char* arguments[] = {"journalistes", argv[1], requete, theme, texte,NULL}; //nombre d'archivistes, requete, theme de l'article, texte ou num_article
+                execve("journalistes", arguments, envp);
+                while(1);
+            }
+            else            //Père
+            {
+                liste_pid[i]=pid;   //On stock le pid dans la liste
+                //printf("%d\n",liste_pid[i]);
+                i++;
+            }
+        }
 
     return 0;  
 }
@@ -106,14 +138,14 @@ void terminaison_fils(int signal)
     exit(-1);
 }
 
-char demande_archive()
+char* demande_archive()
 {
     int nb = rand()%10 + 1;
     if (nb < 7)
-        return 'c';    //consultation
+        return "c";    //consultation
     if (nb < 10)
-        return 'p';   //publication
-    return 'e';       //effacement
+        return "p";   //publication
+    return "e";       //effacement
 }
 
 void le_gros_sigaction()

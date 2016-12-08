@@ -29,6 +29,8 @@ int main(int argc, char* argv[])
             exit(-1);
         }
     
+    printf("\nprog : %s nb_archivistes %s requete : %s \ntheme : %s texte : %s\n",argv[0],argv[1],argv[2], argv[3], argv[4]);
+
     int nb_archivistes = atoi(argv[1]);
 
     char requete = argv[2][0];
@@ -37,19 +39,22 @@ int main(int argc, char* argv[])
     if (requete == 'c')     //Consultation
     {
         int num_article = atoi(argv[4]);    //Numéro de l'article à consulter
+        /* Il faudra vérifier si le numéro de l'article à consulter n'est pas supérieur au nombre d'articles du thème*/
+        /* et avertir le journaliste si c'est le cas*/
     }
 
     if (requete == 'p')     //Publication
     {
         char texte_article[4];    //Texte de l'article
         strcpy(texte_article, argv[4]);
-        printf("%s\n", texte_article);
     }
 
     if (requete == 'e')     //Effacement
     {
         int num_article = atoi(argv[4]);    //Numéro de l'article à effacer
+        /* Il faudra vérifier si le numéro de l'article à consulter n'est pas supérieur au nombre d'articles du thème*/
+        /* et avertir le journaliste si c'est le cas*/
     }
 
-    return 0;
+    exit (0);
 }
