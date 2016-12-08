@@ -6,6 +6,8 @@
 
 # Executable
 initial
+journalistes
+archiviste
 
 # Precompiled Headers
 *.gch
