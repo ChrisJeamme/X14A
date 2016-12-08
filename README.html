@@ -1,0 +1,248 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head>
+<title>Projet de programmation système 
+</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="Bluefish 2.2.7" >
+<style type="text/css">
+body{background-color: #ecf0f1;}
+h1{color: white;}
+h2{color: white;}
+h3{color: white;}
+h4{color: white;}
+.li-itemize{margin:1ex 0ex;}
+.li-enumerate{margin:1ex 0ex;}
+.dd-description{margin:0ex 0ex 1ex 4ex;}
+.dt-description{margin:0ex;}
+.toc{list-style:none;}
+.thefootnotes{text-align:left;margin:0ex;}
+.dt-thefootnotes{margin:0em;}
+.dd-thefootnotes{margin:0em 0em 0em 2em;}
+.footnoterule{margin:1em auto 1em 0px;width:50%;}
+.caption{padding-left:2ex; padding-right:2ex; margin-left:auto; margin-right:auto}
+.title{margin:2ex auto;text-align:center}
+.center{text-align:center;margin-left:auto;margin-right:auto;}
+.flushleft{text-align:left;margin-left:0ex;margin-right:auto;}
+.flushright{text-align:right;margin-left:auto;margin-right:0ex;}
+DIV TABLE{margin-left:inherit;margin-right:inherit;}
+PRE{text-align:left;margin-left:0ex;margin-right:auto;}
+BLOCKQUOTE{margin-left:4ex;margin-right:4ex;text-align:left;}
+TD P{margin:0px;}
+.boxed{border:1px solid black}
+.textboxed{border:1px solid black}
+.vbar{border:none;width:2px;background-color:black;}
+.hbar{border:none;height:2px;width:100%;background-color:black;}
+.hfill{border:none;height:1px;width:200%;background-color:black;}
+.vdisplay{border-collapse:separate;border-spacing:2px;width:auto; empty-cells:show; border:2px solid red;}
+.vdcell{white-space:nowrap;padding:0px;width:auto; border:2px solid green;}
+.display{border-collapse:separate;border-spacing:2px;width:auto; border:none;}
+.dcell{white-space:nowrap;padding:0px;width:auto; border:none;}
+.dcenter{margin:0ex auto;}
+.vdcenter{border:solid #3498db 2px; margin:0ex auto;}
+.minipage{text-align:left; margin-left:0em; margin-right:auto;}
+.marginpar{border:solid thin black; width:20%; text-align:left;}
+.marginparleft{float:left; margin-left:0ex; margin-right:1ex;}
+.marginparright{float:right; margin-left:1ex; margin-right:0ex;}
+.theorem{text-align:left;margin:1ex auto 1ex 0ex;}
+.part{margin:2ex auto;text-align:center}
+
+.title{padding:1ex;background:#3498db;}
+.titlemain{padding:1ex;background:#3498db;}
+.titlerest{padding:1ex;background:#3498db;}
+.part{padding:1ex;background:#3498db;}
+.section{padding:.5ex;background:#3498db;}
+.subsection{padding:0.3ex;background:#3498db;}
+.subsubsection{padding:0.5ex;background:#34495e;}
+.fmarginpar{border:solid thin #34495e; width:20%; text-align:left;}
+.ffootnoterule{border:none;margin:1em auto 1em 0px;width:50%;background:#34495e;}
+.ftoc1{list-style:none;margin:0ex 1ex;padding:0ex 1ex;border-left:1ex solid #34495e;}
+.ftoc2{list-style:none;margin:1ex 1ex;padding:0ex 1ex;border-left:1ex solid #34495e;}
+.ftoc3{list-style:none;margin:0ex 1ex;padding:0ex 1ex;border-left:1ex solid #34495e;}
+.ftoc4{list-style:none;margin:0ex 1ex;padding:0ex 1ex;border-left:1ex solid #34495e;}
+.ftoc5{list-style:none;margin:0ex 1ex;padding:0ex 1ex;border-left:1ex solid #34495e;}
+</style>
+
+<meta name="author" content="JEAMME Christopher" >
+</head>
+<body> 
+<!--background="Projet%20de%20programmation%20syst%C3%A8me_fichiers/monfond.gif">	INTERDIT -->
+
+<!--CUT DEF section 1 --><table class="title"><tbody><tr><td><h1 class="titlemain"><b><font size="5">Projet de programmation système </font></b></h1><h3 class="titlerest">P. Ezequel</h3></td></tr>
+</tbody></table><p>On se propose de simuler l’activité du service des 
+archives d’un organe de presse. Dans un tel service d’archives d’un 
+journal, des archivistes s’activent pour satisfaire les requêtes des 
+journalistes (donc, d’ores et déjà, il y aura au moins deux programmes à
+ écrire …). Plus précisément&nbsp;:</p><ul class="itemize"><li class="li-itemize">
+les journalistes peuvent demander aux archivistes soit d’archiver un 
+article, soit de leur fournir un article sur un sujet traité 
+antérieurement, soit d’effacer un article;
+</li><li class="li-itemize">les archivistes sont chargés de la gestion 
+des diverses archives (car elles sont classées par thème). Ils répondent
+ aux requêtes des journalistes, et leur en transmettent le résultat s’il
+ s’agit d’une consultation.
+</li></ul><p>L’application sera
+composée d’un processus <tt>initial</tt> qui va se charger de créer et
+d’initialiser les IPC
+nécessaires à l’application, et de deux catégories de processus fils, les journalistes et les archivistes.</p><!--TOC section Règles du jeu, à lire attentivement-->
+<h2 class="section"><!--SEC ANCHOR --><a name="htoc1">1</a>&nbsp;&nbsp;Règles du jeu, à lire attentivement</h2><!--SEC END --><ol class="enumerate" type="1"><li class="li-enumerate"><b>
+</b><b>Cet énoncé a été rendu disponible </b><b>jeudi 8 décembre 2016 à 8
+h</b><b> (heure du serveur de temps local). Vous devrez réaliser
+l’application, </b><b>en binome ou monome 
+uniquement</b><b>, et rendre votre travail par messagerie </b><b>au plus
+tard vendredi 9 décembre 2016 minuit (heure du serveur de messagerie utilisé
+faisant foi)</b><b>.</b></li><li class="li-enumerate"><b>Tout travail rendu en </b><b><i>n</i></b><b>-nome, avec </b><b><i>n</i>≥ 3</b><b>, vaudra 0/20. </b></li><li class="li-enumerate"><b>Vous serez noté sur le projet lui-même ainsi que sur une
+soutenance orale par groupe, lundi 19 décembre 2016.</b></li><li class="li-enumerate"><b>J’attire votre attention sur les points suivants, dont la non-observance sera éliminatoire :
+</b><ol class="enumerate" type="a"><li class="li-enumerate"><b>
+</b><b>la compilation de votre programme doit se faire en silence avec l’option </b><b><tt>-Wall</tt></b><b> de gcc;
+</b></li><li class="li-enumerate"><b>l’exécution ne doit pas générer d’erreur (en particulier pas d’erreur de segmentation).
+</b></li></ol></li><li class="li-enumerate"><b>Un critère essentiel de la note sera l’adéquation à la norme
+POSIX pour la partie système, et la qualité de la programmation pour la
+partie C.</b></li><li class="li-enumerate"><b>Les salles suivantes sont réservées pour vous permettre de travailler:
+</b><ol class="enumerate" type="a"><li class="li-enumerate"><b>
+</b><b>jeudi 8 décembre : H206 de 8h à 15h30, H203 de 15h30 à 18h;
+</b></li><li class="li-enumerate"><b>vendredi 9 décembre : H206 de 8h à 13h30, H106 de 13h30 à 15h30, H104 de 15h30 à 18h.
+</b></li></ol><b>
+Vous pouvez aussi travailler en
+H205, H206, H203, H104, H106 (selon disponibilités), ou bien chez vous, ou bien où
+vous voulez, dans la mesure où les règles du jeu sont respectées.</b></li><li class="li-enumerate"><b>Rendre le projet va consister à 
+</b><ol class="enumerate" type="a"><li class="li-enumerate"><b>
+</b><b>faire un </b><b><tt>tar</tt></b><b> (voir </b><b><tt>man tar</tt></b><b>)
+ du répertoire
+contenant le projet. Le nom du répertoire doit être constitué du ou des 
+noms des auteurs (vous serez pénalisés si ce n’est pas le cas);
+</b></li><li class="li-enumerate"><b>l’envoyer comme fichier attaché à
+</b><b><tt>ezequel(at)univ-st-etienne.fr</tt></b><b>;
+</b></li><li class="li-enumerate"><b>avec comme sujet </b><b>impérativement</b><b>
+</b><b><font color="purple">exam-unix-2016</font></b><b> (vous serez pénalisés si ce n’est pas le cas).
+</b></li></ol></li><li class="li-enumerate"><b>Le répertoire doit contenir 3 programmes C (voir plus bas) ainsi
+qu’un </b><b><tt>Makefile</tt></b><b> en ordre de marche, avec une cible
+</b><b><tt>clean</tt></b><b> ou </b><b><tt>nettoyer</tt></b><b>. 
+</b></li></ol><!--TOC section Le processus <TT>initial</TT>-->
+<h2 class="section"><!--SEC ANCHOR --><a name="htoc2">2</a>&nbsp;&nbsp;Le processus <tt>initial</tt></h2><!--SEC END --><p>
+C’est lui qui est chargé de lancer et d’arrêter proprement
+l’application. Ses spécifications sont les
+suivantes&nbsp;:
+</p><ul class="itemize"><li class="li-itemize">
+il prend 2 entiers en argument sur la ligne de commande&nbsp;:<p><code>initial nb_archivistes nb_themes</code></p><p>où
+</p><ol class="enumerate" type="1"><li class="li-enumerate">
+<tt>nb_archivistes</tt> représente le nombre d’archivistes à créer et à lancer (ce nombre sera <b>toujours</b> au moins 2);
+</li><li class="li-enumerate"><tt>nb_themes</tt> représente le nombre de thèmes d’articles différents (ce nombre sera <b>toujours</b> au moins 2).
+</li></ol></li><li class="li-itemize">il doit créer et initialiser les IPC nécessaires à l’application
+(ensembles de sémaphores, segments de mémoire, file de message);
+</li><li class="li-itemize">il doit créer et lancer les archivistes;
+</li><li class="li-itemize">c’est lui qui crée les journalistes&nbsp;: 
+indéfiniment, il crée un journaliste avec une requête. On a observé que,
+ sur 10 demandes aux archives,
+<ul class="itemize"><li class="li-itemize">
+7 sont des demandes de consultation d’archives,
+</li><li class="li-itemize">2 sont des demandes de publication d’articles,
+</li><li class="li-itemize">1 est une demande d’effacement d’articles.
+</li></ul>
+Il y a donc plus de demandes de consultation que de demande de modification des archives&nbsp;: le processus <tt>initial</tt>
+ doit tenir compte de ces statistiques lors de la création aléatoire des
+ journalistes ainsi que des opérations qu’ils demandent aux archivistes;
+</li><li class="li-itemize">à la réception de tout signal (sauf SIGKILL et
+SIGCHLD), il doit terminer les archivistes (ainsi que les journalistes encore en attente), puis supprimer les IPC avant de
+se terminer&nbsp;: <b>ceci constitue l’unique façon d’arrêter l’application</b>.
+</li></ul><!--TOC section Les archives-->
+<h2 class="section"><!--SEC ANCHOR --><a name="htoc3">3</a>&nbsp;&nbsp;Les archives</h2><!--SEC END --><p>L’application est donc constituée (entre autres)
+de processus &lt;&lt;&nbsp;archivistes&nbsp;&gt;&gt;.
+Les archivistes reçoivent les requêtes des journalistes et leur répondent. Il y a deux types de requête&nbsp;:
+</p><ul class="itemize"><li class="li-itemize">
+les consultations&nbsp;: dans ce cas, le journaliste demande un article concernant un thème;
+</li><li class="li-itemize">les publications&nbsp;: dans ce cas, le journaliste demande à ajouter ou retirer un article à un thème.
+</li></ul><p>
+Les archivistes, indéfiniment, reçoivent les demandes des journalistes,
+vont consulter ou modifier l’archive du thème correspondant,
+et recommencent. 
+Il faudra donc un instrument
+de communication entre tous ces processus&nbsp;: vous devrez notamment utiliser une IPC de
+type <em>file de messages</em> pour le dialogue entre les journalistes
+et les archivistes.</p><p>Les articles de chaque thème seront rangés 
+dans des segments de mémoire partagée, de taille bornée : il y a donc un
+ segment de mémoire partagée par thème. Le nombre d’archivistes 
+consultant simultanément un thème est illimité, mais <b>un seul</b> archiviste à la fois pourra ajouter ou retirer un article à un thème.</p><p>Pour
+ simplifier, et fixer les idées, un thème sera repéré par son numéro. Un
+ article sera représenté par un chaîne de 4 caractères.</p><p>Voyons maintenant les spécifications précises des 2 types de
+processus. </p><!--TOC subsection Les archivistes-->
+<h3 class="subsection"><!--SEC ANCHOR --><a name="htoc4">3.1</a>&nbsp;&nbsp;Les archivistes</h3><!--SEC END --><p>
+Chaque archiviste, <b>lancé par le processus </b><b><tt>initial</tt></b><b> à
+l’exclusion de toute autre méthode</b>, reçoit 2
+paramètres, son numéro d’ordre et le nombre de thèmes différents (c’est-à-dire le <tt>nb_themes</tt> du processus <em>initial</em>).</p><p>Après récupération des IPC
+utilisées (segments de mémoire, ensembles de sémaphores et file de message), il doit exécuter
+<b>indéfiniment</b> la boucle suivante&nbsp;:
+</p><ul class="itemize"><li class="li-itemize">
+réception du travail à faire, par relevage d’un message 
+dans la file de messages. Un travail
+est déterminé par son
+type (création, publication, effacement)
+ainsi que par le thème concerné. D’autres informations seront peut-être 
+nécessaires (par exemple, numéro de l’article à effacer ou à consulter, 
+ou bien &lt;&lt;texte&gt;&gt; de l’article à ajouter);
+</li><li class="li-itemize">placement dans des files d’attente;
+</li><li class="li-itemize">exécution du travail (on simulera une durée de travail en endormant l’archiviste avec l’un des appels sleep ou nanosleep);
+</li><li class="li-itemize">notification au journaliste de la fin du 
+traitement de la requête, par
+envoi d’un message de
+type judicieusement choisi dans la file de messages (il pourra être 
+nécessaire d’ajouter des informations à ce message, par exemple si la 
+requête était une consultation).
+</li></ul><p><b>NB1 : en aucun cas le nombre de paramètres d’un archiviste ne doit être différent de 2</b></p><p><b>NB2 : vous aurez à résoudre en particulier le problème
+de l’identité du journaliste à l’origine d’une requête</b></p><p>L’arrêt d’un archiviste est assuré par le captage par celui-ci d’un
+signal&nbsp;: on veillera donc, dans la partie &lt;&lt;initialisations&gt;&gt; des
+archivistes, à positionner une fonction de capture des signaux.</p><!--TOC subsection Les journalistes-->
+<h3 class="subsection"><!--SEC ANCHOR --><a name="htoc5">3.2</a>&nbsp;&nbsp;Les journalistes</h3><!--SEC END --><p>
+Chaque journaliste, <b>lancé par le processus </b><b><tt>initial</tt></b><b> à
+l’exclusion de toute autre méthode</b>, reçoit un certain nombre de paramètres&nbsp;:
+</p><ol class="enumerate" type="1"><li class="li-enumerate">
+le premier paramètre est le nombre d’archivistes (c’est le <tt>nb_archivistes</tt> du processus <em>initial</em>);
+</li><li class="li-enumerate">d’autres paramètres&nbsp;:
+<ul class="itemize"><li class="li-itemize">
+si le deuxième paramètre est <tt>C</tt>&nbsp;: il s’agit d’une 
+consultation. Il y a 2 autres paramètres, le thème concerné (en fait le 
+numéro du segment de mémoire contenant les articles de ce thème) ainsi 
+que le numéro de l’article à consulter (si ce nombre est supérieur au 
+nombre d’articles du thème, l’archiviste qui traitera la requête s’en 
+apercevra, et avertira le journaliste);
+</li><li class="li-itemize">si le deuxième paramètre est <tt>P</tt>&nbsp;:
+ il s’agit d’une publication. Il y a deux autres paramètres, le thème 
+concerné, et le texte de l’article (une chaîne de 4 caractères);
+</li><li class="li-itemize">si le deuxième paramètre est <tt>E</tt>&nbsp;:
+ il s’agit d’un effacement. Il y a deux autres paramètres, le thème 
+concerné, et le numéro de l’article à effacer (si ce nombre est 
+supérieur au nombre d’articles du thème, l’archiviste qui traitera la 
+requête s’en apercevra, et avertira le journaliste).
+</li></ul>
+</li></ol><p>Après récupération des IPC
+qu’il utilise, il doit 
+</p><ul class="itemize"><li class="li-itemize">
+choisir l’archiviste <b>le moins occupé</b> (cad celui dont la file d’attente est la plus courte); les archivistes sont repérés par leur numéro d’ordre;
+</li><li class="li-itemize">passer sa requête à l’archiviste choisi en postant un message contenant les paramètres
+qu’il a reçus du processus <em>initial</em>;
+</li><li class="li-itemize">afficher (par un moyen à votre convenance) la requête et son résultat.
+</li></ul><!--TOC section Conseils gratuits et infos diverses-->
+<h2 class="section"><!--SEC ANCHOR --><a name="htoc6">4</a>&nbsp;&nbsp;Conseils gratuits et infos diverses</h2><!--SEC END --><p><a name="sec:conseils"></a>
+</p><ol class="enumerate" type="1"><li class="li-enumerate">je serai disponible jeudi 8 décembre de 8h à 12h;</li><li class="li-enumerate">inspirez-vous des programmes vus en TP;</li><li class="li-enumerate">aérez votre code, et mettez des commentaires (je ne suis pas omniscient);</li><li class="li-enumerate">il n’aura pas échappé à votre sagacité que vous devrez implanter un des 2 protocoles lecteurs/rédacteurs vus en cours;</li><li class="li-enumerate">si vous réalisez seulement le programme initial, votre note sera au mieux de 10/20;</li><li class="li-enumerate">si
+ vous réalisez seulement le programme initial et l’implantation du (bon)
+ protocole lecteurs/rédacteurs, votre note sera au mieux de 12/20;</li><li class="li-enumerate">si vos journalistes ne s’adressent pas à l’archiviste le moins occupé, vous serez pénalisé de 3 points;</li><li class="li-enumerate">je
+ vous conseille de procéder par étape : d’abord les archivistes, puis 
+les journalistes, puis leur interaction. Vous pourriez aussi commencer 
+avec un seul thème, et généraliser à plusieurs thèmes lorsque tout sera 
+en place;</li><li class="li-enumerate">le mieux est l’ennemi du bien : 
+je préfère un programme limité mais qui marche, à un programme ambitieux
+ qui ne marche pas. Méfiez-vous des améliorations de dernière minute;</li><li class="li-enumerate">l’expérience montre que l’on n’accomplit rien de bon avec l’estomac vide ou un déficit de sommeil trop important;</li><li class="li-enumerate">comme d’habitude, on nettoie derrière soi&nbsp;: vérifiez que vous
+n’avez pas de processus orphelins, ne laissez pas d’IPC inutilisées
+(Rappel&nbsp;: les commandes <tt>ipcs</tt> et <tt>ipcrm</tt> permettent
+de consulter et de détruire, respectivement, des IPC). Vous serez 
+pénalisés si ce n’est pas le cas (cad si je suis obligé de détruire à la
+ main des processus orphelins ou des IPC après un test de votre 
+programme).
+</li></ol><!--CUT END -->
+<!--HTMLFOOT-->
+<!--ENDHTML-->
+<!--FOOTER-->
+<hr size="2"><blockquote class="quote"><em>This document was translated from L<sup>A</sup>T<sub>E</sub>X by
+</em><a href="http://hevea.inria.fr/index.html"><em>H</em><em><font size="2"><sup>E</sup></font></em><em>V</em><em><font size="2"><sup>E</sup></font></em><em>A</em></a><em>.</em></blockquote>
+
+</body></html>
