@@ -5,6 +5,11 @@
 #include <sys/msg.h>
 #include <sys/sem.h>
 #include <time.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
+
 
 /*********************************/
 /*        Coding Party           */
