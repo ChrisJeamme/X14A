@@ -75,11 +75,8 @@ int main(int argc, char* argv[], char* envp[])
             {
                 printf("fils (de pute)\n");
 
-                //char* arguments[] = {"0", (char*)nb_themes, NULL}; //Numéro d'ordre , Nombre de thèmes
-
-                //execve("archiviste",arguments,envp);
-
-                //free(arguments);
+                char* arguments[] = {"0", argv[2], NULL}; //Numéro d'ordre , Nombre de thèmes
+                execve("archiviste",arguments,envp);
                 exit(-1);
             }
             else            //Père
