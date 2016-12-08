@@ -26,7 +26,7 @@
 
 void terminaison_fils(int signal);
 char demande_archive();
-
+void le_gros_sigaction();
 
 pid_t *liste_pid;
 int nb_archivistes;
@@ -73,27 +73,21 @@ int main(int argc, char* argv[], char* envp[])
             }
             if(pid == 0)    //Fils
             {
-                printf("fils (de pute)\n");
-
+                //printf("Lancement du fils %d\n", pid);
                 char* arguments[] = {"archiviste", "0", argv[2], NULL}; //Numéro d'ordre , Nombre de thèmes
                 execve("archiviste",arguments,envp);
-                exit(-1);
+                while(1);
             }
             else            //Père
             {
                 liste_pid[i]=pid;   //On stock le pid dans la liste
-                printf("%d\n",liste_pid[i]);
+                //printf("%d\n",liste_pid[i]);
             }
         }
         
     /*Gestion des signaux de terminaison des fils*/
 
-        struct sigaction s_terminaison_fils;        //Création règle
-        s_terminaison_fils.sa_handler = &terminaison_fils;   //Adresse fonction gestionnaire de la règle
-        s_terminaison_fils.sa_flags = 0;            //Ignoré
-        sigemptyset(&s_terminaison_fils.sa_mask);   //Aucun signaux masqué => ensemble signal vide dans sa_mask
-        sigaction(SIGKILL, &s_terminaison_fils, 0); //Ajout de la règle pour SIGKILL
-        sigaction(SIGCHLD, &s_terminaison_fils, 0); //Ajout de la règle pour SIGCHLD
+        le_gros_sigaction(); //Ajout de la règle pour tous les signaux sauf SIGKILL et SIGCHLD
         
         while(1);
 
@@ -102,11 +96,14 @@ int main(int argc, char* argv[], char* envp[])
 
 void terminaison_fils(int signal)
 {
+    printf("Demande de terminaison des fils\n");
     int i;
     for(i=0; i<nb_archivistes; i++)
     {
-        kill(liste_pid[i], SIGTERM);    //On envoi SIGTERM à tout les archivistes
+        kill(liste_pid[i], SIGKILL);    //On envoi SIGTERM à tout les archivistes
+        printf("Archiviste %d à priori terminé\n", liste_pid[i]);
     }
+    exit(-1);
 }
 
 char demande_archive()
@@ -117,4 +114,42 @@ char demande_archive()
     if (nb < 10)
         return 'p';   //publication
     return 'e';       //effacement
+}
+
+void le_gros_sigaction()
+{
+    //Gestionnaire
+    struct sigaction s_terminaison_fils;        //Création gestionnaire
+    s_terminaison_fils.sa_handler = &terminaison_fils;   //Adresse fonction du gestionnaire
+    s_terminaison_fils.sa_flags = 0;            //Ignoré
+    sigemptyset(&s_terminaison_fils.sa_mask);   //Aucun signaux masqué => ensemble signal vide dans sa_mask
+
+                /*//Création de l'ensemble de signaux à écouter
+                sigset_t signaux;
+                sigemptyset(&signaux);
+                sigfillset(&signaux);
+                if(!sigismember(&signaux, SIGKILL) || !sigismember(&signaux, SIGCHLD))
+                {
+                    fprintf(stderr, "Erreur improbable\n");
+                    exit(-1);
+                }
+                sigdelset(&signaux, SIGKILL);
+                sigdelset(&signaux, SIGCHLD);
+                sigwaitinfo(&signaux, NULL);*/
+
+    //Algorithme de pataras mais au moins on ne fait pas un seul for avec un if à chaque boucle !
+    
+    int i;
+    for(i=1; i<9; i++)  //On coupe à SIGKILL
+    {
+        sigaction(i, &s_terminaison_fils, 0); //Ajout de la règle pour SIG**** = i
+    }
+    for(i=10; i<17; i++)   //On coupe à SIGCHLD
+    {
+        sigaction(i, &s_terminaison_fils, 0); //Ajout de la règle pour SIG**** = i
+    }
+    for(i=18; i<=32; i++)
+    {
+        sigaction(i, &s_terminaison_fils, 0); //Ajout de la règle pour SIG**** = i
+    }
 }
