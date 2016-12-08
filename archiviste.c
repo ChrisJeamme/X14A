@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
         key_t cle = ftok("requete_journaliste", 'a');
         
         /*Création d'une file de message*/
-        int id_file = msgget(cle, 0666 | IPC_CREAT);
+        int id_file = msgget(cle, 0666 | IPC_CREAT | IPC_PRIVATE );
         if (id_file == -1)
         {
             perror("Erreur de création de la file de messages");
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
                 perror("Erreur de lecture dans la file");
                 exit(EXIT_FAILURE);
             }
-            printf("Message : %s", message.texte);
+            printf("archiviste : Message bien reçu : %s", message.texte);
         }
 
 

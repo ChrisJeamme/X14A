@@ -91,7 +91,6 @@ int main(int argc, char* argv[], char* envp[])
         while(1)
         {
             pid_t pid = fork();
-            sleep(2);
             char *requete = demande_archive();
             char *theme = "3";
             char *texte;
