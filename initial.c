@@ -1,19 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <unistd.h>
 #include <sys/types.h>
 #include <signal.h>
-#include <wait.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/msg.h>
 #include <sys/sem.h>
 #include <time.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/wait.h>
-#include <signal.h>
 
 
 /*********************************/
@@ -37,6 +32,7 @@ int demande_archive()
     return 3;       //effacement
 }
 
+void terminaison_fils(int signal);
 
 int main(int argc, char* argv[])
 {
@@ -64,24 +60,26 @@ int main(int argc, char* argv[])
             exit(-1);
         }
     
-    /*Création de l'ensemble de signaux à capter*/
+    /*Gestion des signaux de terminaison des fils*/
 
-        sigset_t ensemble_signaux;
-        sigemptyset(&ensemble_signaux); //On créer un ensmble de signaux vide
-        sigfillset(&ensemble_signaux);  //On met tout les signaux possibles
+        struct sigaction s_terminaison_fils;        //Création règle
+        s_terminaison_fils.sa_handler = &terminaison_fils;   //Adresse fonction gestionnaire de la règle
+        s_terminaison_fils.sa_flags = 0;            //Ignoré
+        sigemptyset(&s_terminaison_fils.sa_mask);   //Aucun signaux masqué => ensemble signal vide dans sa_mask
 
-        //Vérification sûrement inutile
-        if ( !sigismember(&ensemble_signaux, SIGKILL) || !sigismember(&ensemble_signaux, SIGCHLD))
-        {
-            fprintf(stderr, "Erreur: SIGKILL ou SIGCHLD n'est pas dans l'ensemble de signaux 'ensemble_signaux'");
-            exit(-1);
-        }
+        sigaction(SIGKILL, &s_terminaison_fils, 0); //Ajout de la règle pour SIGKILL
+        sigaction(SIGCHLD, &s_terminaison_fils, 0); //Ajout de la règle pour SIGCHLD
         
-        //On supprime les signaux qui n'impliqueront pas la terminaison des archivistes et des journalistes
-        sigdelset(&ensemble_signaux, SIGKILL);
-        sigdelset(&ensemble_signaux, SIGCHLD);
+        while(1);
 
     return 0;
 }
 
-
+void terminaison_fils(int signal)
+{
+    int i;
+    for(i=0; i<nb_archivistes; i++)
+    {
+        kill(liste_pid[i], SIGTERM);    //On envoi SIGTERM à tout les archivistes
+    }
+}
