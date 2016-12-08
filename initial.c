@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/msg.h>
+#include <sys/sem.h>
 
 int main(int argc, char* argv[])
 {
@@ -24,6 +28,8 @@ int main(int argc, char* argv[])
                         "\tnb_themes >1\n\n");
         exit(-1);
     }
+    
+
 
     return 0;
 }
