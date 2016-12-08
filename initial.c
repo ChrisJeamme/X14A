@@ -1,5 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <wait.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/msg.h>
@@ -29,6 +34,22 @@ int main(int argc, char* argv[])
         exit(-1);
     }
     
+    /*Création de l'ensemble de signaux à capter*/
+
+        sigset_t ensemble_signaux;
+        sigemptyset(&ensemble_signaux); //On créer un ensmble de signaux vide
+        sigfillset(&ensemble_signaux);  //On met tout les signaux possibles
+
+        //Vérification sûrement inutile
+        if ( !sigismember(&ensemble_signaux, SIGKILL) || !sigismember(&ensemble_signaux, SIGCHLD))
+        {
+            fprintf(stderr, "Erreur: SIGKILL ou SIGCHLD n'est pas dans l'ensemble de signaux 'ensemble_signaux'");
+            exit(-1);
+        }
+        
+        //On supprime les signaux qui n'impliqueront pas la terminaison des archivistes et des journalistes
+        sigdelset(&ensemble_signaux, SIGKILL);
+        sigdelset(&ensemble_signaux, SIGCHLD);
 
 
     return 0;
