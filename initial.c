@@ -34,6 +34,10 @@ int demande_archive()
 
 void terminaison_fils(int signal);
 
+
+pid_t *liste_pid;
+int nb_archivistes;
+
 int main(int argc, char* argv[])
 {
     srand(time(NULL));
@@ -48,7 +52,7 @@ int main(int argc, char* argv[])
         }
 
     /*On récupère les arguments*/
-        int nb_archivistes = atoi(argv[1]);
+        nb_archivistes = atoi(argv[1]);
         int nb_themes = atoi(argv[2]);
 
     /*Vérification des arguments*/
@@ -59,14 +63,38 @@ int main(int argc, char* argv[])
                             "\tnb_themes >1\n\n");
             exit(-1);
         }
-    
+
+    /* Création des archivistes*/
+        liste_pid = malloc(nb_archivistes * sizeof(pid_t)); //pour stocker le pid de chacun des archivistes
+        int i;
+        printf("\n\n%d\n\n", nb_archivistes);
+        for(i=0; i<nb_archivistes; i++) 
+        {
+            pid_t pid = fork();  //Création de l'archiviste
+
+            if(pid == -1) 
+            {
+                fprintf(stderr, "Erreur de fork\n");
+                exit(-1);
+            }
+            if(pid == 0) 
+            {
+                printf("fils (de pute)\n");
+                exit(-1);
+            }
+            else
+            {
+                liste_pid[i]=pid;
+                printf("%d\n",liste_pid[i]);
+            }
+        }
+        
     /*Gestion des signaux de terminaison des fils*/
 
         struct sigaction s_terminaison_fils;        //Création règle
         s_terminaison_fils.sa_handler = &terminaison_fils;   //Adresse fonction gestionnaire de la règle
         s_terminaison_fils.sa_flags = 0;            //Ignoré
         sigemptyset(&s_terminaison_fils.sa_mask);   //Aucun signaux masqué => ensemble signal vide dans sa_mask
-
         sigaction(SIGKILL, &s_terminaison_fils, 0); //Ajout de la règle pour SIGKILL
         sigaction(SIGCHLD, &s_terminaison_fils, 0); //Ajout de la règle pour SIGCHLD
         
