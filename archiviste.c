@@ -113,13 +113,13 @@ int main(int argc, char* argv[])
 				}
 				else 
 				{
-					printf("Il n'y a pas d'article numero %d dans le theme %d", atoi(message.texte), message.theme);
+					printf("Il n'y a pas d'article numero %d dans le theme %d\n", atoi(message.texte), message.theme);
 				}
 			}
 			else // effacement
 			{
 				suppr_article(message.theme, atoi(message.texte));
-				printf("L'aricle a ete efface.");
+				printf("L'article a ete effacé\n");
 			}
 			afficher_liste_themes();
             
