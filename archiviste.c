@@ -71,9 +71,9 @@ int main(int argc, char* argv[])
 		//afficher_liste_themes();
 
         //recup_tout_smp();
-        recup_smp("initial.c", 'z', 0);   //Dans memoire_p
+        recup_smp("initial.c", 'z', 1);   //Dans memoire_p
 
-        //afficher_liste_themes();
+        afficher_liste_themes();
 
     /* Récupération file de messages*/
 
@@ -141,10 +141,10 @@ void recup_smp(char* fichier, int code, int numero_theme)
 		for(j=1; j<=MAX_ARTICLE; j++)
 		{
         	snprintf(liste_themes[numero_theme].article[j], 5, "%s", article+j*4);
+			liste_themes[numero_theme].article[j][4]='\0';
 			liste_themes[numero_theme].numero = numero_theme;
 		}
 
-      printf("Le tableau d'article que j'ai récupéré: %s\n", article[1]);
       shmdt(&article);
     }
   }
