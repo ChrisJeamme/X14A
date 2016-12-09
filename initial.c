@@ -49,7 +49,6 @@ int main(int argc, char* argv[], char* envp[])
 {
     srand(time(NULL));
 
-
     /*Vérification du nombre d'arguments*/
         if (argc != 3)
         {
@@ -72,6 +71,12 @@ int main(int argc, char* argv[], char* envp[])
             exit(-1);
         }
     
+    /* Création liste des thèmes et partage en SMP*/
+
+        initialiser_liste_themes();
+
+        //afficher_liste_themes();
+
     /* Création des archivistes*/
         liste_pid = malloc(nb_archivistes * sizeof(pid_t)); //pour stocker le pid de chacun des archivistes
         int i;
@@ -102,33 +107,6 @@ int main(int argc, char* argv[], char* envp[])
 
     /* Gestion des signaux de terminaison des fils */
         le_gros_sigaction(); //Ajout de la règle pour tous les signaux sauf SIGKILL et SIGCHLD
-
-    /* Création des segments de mémoire partagé */
-        // for(i=0; i<nb_themes; i++)
-        // {
-                
-        // }
-        // int* entier_p;
-        // key_t cle_smp = ftok ("z", 'z'); //12345;
-        
-        // if((memoire_p = shmget(cle_smp, sizeof(int), IPC_CREAT | 0660 )) != -1)
-        // {
-        //     if((entier_p = shmat(memoire_p, NULL, 0)))
-        //     {
-        //         *entier_p = 5;
-        //         printf("Wesh wesh, je fou mon entier %d\n", *entier_p);
-        //         shmdt(&entier_p);
-        //     }
-        // }
-        // else
-        // {
-        //     fprintf(stderr, "Problème de mémoire partagé (initial)\n");
-        //     //exit(-1);
-        // }
-        
-        //shmctl(memoire_p, IPC_RMID, NULL);
-
-        //TODO Détacher les SMP
 
     /* Création des journalistes */
         while(1)
@@ -281,7 +259,7 @@ void initialiser_liste_themes()
 
 void stockage_smp(char* fichier, int code)
 {
-  key_t cle = ftok("test_smh.c", 'z');
+  key_t cle = ftok("initial.c", 'z');
   if (cle == -1)
   {
     perror("ftok");
@@ -289,7 +267,6 @@ void stockage_smp(char* fichier, int code)
   }
 
   char* charal;
-  int status;
 
   if((memoire_p = shmget(cle, nb_themes*sizeof(theme), IPC_CREAT | 0660)) != -1)
   {

@@ -43,7 +43,6 @@ typedef struct
   int numero;
   char article[MAX_ARTICLE][5];
 }theme;
-
 theme* liste_themes;
 
 
@@ -64,7 +63,7 @@ int main(int argc, char* argv[])
 
     /* Récupération ensembles de mémoire partagé */
         
-        //int* test = recup_smp('z');
+        recup_smp("initial.c", 'z');   //Dans memoire_p
 
     /* Récupération file de messages*/
 
