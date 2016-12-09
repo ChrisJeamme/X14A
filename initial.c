@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>
-
+#include <errno.h>
 
 /*********************************/
 /*        Coding Party           */
@@ -90,14 +90,13 @@ int main(int argc, char* argv[], char* envp[])
     /* Création des segments de mémoire partagé */
         // for(i=0; i<nb_themes; i++)
         // {
-
+                
         // }
-
         int memoire_p;
         int* entier_p;
-        key_t cle_smp = ftok ("smp", 'b');
+        key_t cle_smp = ftok ("z", 'z'); //12345;
         
-        if((memoire_p = shmget(cle_smp, sizeof(int), IPC_CREAT | IPC_EXCL | 0660)) != -1)
+        if((memoire_p = shmget(cle_smp, sizeof(int), IPC_CREAT | IPC_EXCL | 0660 )) != -1)
         {
             if((entier_p = shmat(memoire_p, NULL, 0)))
             {

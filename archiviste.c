@@ -18,6 +18,8 @@
 /*       BRUYERE Dimitri         */
 /*********************************/
 
+int* recup_smp(char id);
+
 struct contenu
 {
     long type;
@@ -39,22 +41,8 @@ int main(int argc, char* argv[])
         int nombre_themes = atoi(argv[2]);
 
     /* Récupération ensembles de mémoire partagé */
-        key_t cle_smp = ftok ("smp", 'b');
-        int memoire_p;
-        int* entier_p;
-
-        if((memoire_p = shmget(cle_smp, 0, 0) == -1))
-        {
-            fprintf(stderr, "Problème de mémoire partagé (archiviste)\n");
-            exit(-1);
-        }
-        else
-        {
-            if((entier_p = shmat(memoire_p, NULL, 0)))
-            {
-                printf("Wesh wesh, j'ai trouvé un entier il est à qui? %d\n", *entier_p);
-            }
-        }
+        
+        int* test = recup_smp('z');
 
     /* Récupération file de messages*/
 
@@ -89,4 +77,31 @@ int main(int argc, char* argv[])
     while(1);
 
     exit(0);
+}
+
+int* recup_smp(char id)
+{
+    key_t cle_smp = ftok ("z", id);//12345;
+    int memoire_p;
+    int* entier_p;
+
+    if((memoire_p = shmget(cle_smp, 0, 0) == -1))
+    {
+        fprintf(stderr, "Problème de mémoire partagé (archiviste)\n");
+        exit(-1);
+    }
+    else
+    {
+        if((entier_p = shmat(memoire_p, NULL, 0)))
+        {
+            printf("Wesh wesh, j'ai trouvé un entier il est à qui? %d\n", *entier_p);
+        }
+        else
+        {
+            fprintf(stderr, "Là je sais plus quoi te dire\n");
+            exit(-1);
+        }
+    }
+
+    return entier_p;
 }
