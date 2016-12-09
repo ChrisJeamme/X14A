@@ -199,7 +199,6 @@ char* generer_texte_aleatoire()
     return chaine;
 }
 
-
 int file_message()
 {
     /*Création d'une clé */
@@ -215,9 +214,9 @@ int file_message()
         return id_file;
 }
 
-
 /* Fonctions SMP */
 
+/* Crée un segment de mémoire pour le nombre de thème voulu */
 void stockage_tout_theme()
 {
 	int i;
@@ -227,15 +226,16 @@ void stockage_tout_theme()
 	}
 }
 
+/* Crée le segment de mémoire pour le numéro de thème donné en argument */
 void stockage_smp(int code)
 {
-	key_t cle = code;
+	key_t cle = code;   //On utilise le numéro de thème comme clé
 
 	char* article;
 
 	if((memoire_p = shmget(cle, (MAX_ARTICLE+2)*sizeof(char*)*5, IPC_CREAT | 0660)) != -1)
 	{
-		if((article = shmat(memoire_p, 0, 0)))
+		if((article = shmat(memoire_p, 0, 0)))  //On stock tout dans une chaine
 		{
 			int j;
 
