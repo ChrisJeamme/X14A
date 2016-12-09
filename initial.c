@@ -71,6 +71,7 @@ int main(int argc, char* argv[], char* envp[])
 
         initialiser_liste_themes();
         afficher_liste_themes();
+        stockage_smp("initial.c", 'z');
 
     /* Création des archivistes*/
         liste_pid = malloc(nb_archivistes * sizeof(pid_t)); //pour stocker le pid de chacun des archivistes
@@ -91,7 +92,7 @@ int main(int argc, char* argv[], char* envp[])
                 //printf("Lancement du fils %d\n", pid);
                 char* arguments[] = {"archiviste", num_ordre, argv[2], NULL}; //Numéro d'ordre , Nombre de thèmes
                 execve("archiviste", arguments, envp);
-                while(1);
+                exit(-1);
             }
             else            //Père
             {
@@ -134,7 +135,7 @@ int main(int argc, char* argv[], char* envp[])
                 //printf("Lancement du fils %d\n", pid);
                 char* arguments[] = {"journalistes", argv[1], requete, theme_concerne, texte,NULL}; //nombre d'archivistes, requete, theme de l'article, texte ou num_article
                 execve("journalistes", arguments, envp);
-                while(1);
+                exit(-1);
             }
             else            //Père
             {
@@ -142,7 +143,7 @@ int main(int argc, char* argv[], char* envp[])
                 //printf("%d\n",liste_pid[i]);
                 i++;
             }
-            sleep(2);
+			sleep(2);
         }
 
     return 0;  
@@ -177,7 +178,9 @@ void le_gros_sigaction()
     s_terminaison_fils.sa_handler = &terminaison_fils;   //Adresse fonction du gestionnaire
     s_terminaison_fils.sa_flags = 0;            //Ignoré
     sigemptyset(&s_terminaison_fils.sa_mask);   //Aucun signaux masqué => ensemble signal vide dans sa_mask
-    
+
+    //Algorithme de pataras mais au moins on ne fait pas un seul for avec un if à chaque boucle !
+
     int i;
     for(i=1; i<9; i++)  //On coupe à SIGKILL
     {
@@ -210,7 +213,7 @@ char* generer_texte_aleatoire()
 int file_message()
 {
     /*Création d'une clé */
-        key_t cle = ftok("requete_journaliste", 'a');
+        key_t cle = ftok("requete_journaliste", 1);
 
     /*Création d'une file de message*/
         int id_file = msgget(cle, 0666 | IPC_CREAT | IPC_EXCL);
@@ -227,33 +230,33 @@ int file_message()
 
 void initialiser_liste_themes()
 {
-    liste_themes = NULL;
-    liste_themes = (theme*) malloc((nb_themes+1) * sizeof(theme));
-    if (liste_themes == NULL)
+  liste_themes = NULL;
+  liste_themes = (theme*) malloc(nb_themes+1 * sizeof(theme));
+  if (liste_themes == NULL)
+  {
+    perror("malloc");
+  }
+  printf("Liste thèmes créé avec succès\n");
+
+  int i, j;
+  for(i=1; i<=nb_themes; i++) //On rempli tous les thèmes
+  {
+    liste_themes[i].numero = i;
+    
+    for(j=1; j<(MAX_ARTICLE/2); j++)  //On rempli la moitié des articles de ce thème
     {
-        perror("malloc");
+      strcpy(liste_themes[i].article[j], generer_texte_aleatoire());
+      //printf("article %d\n", j);
     }
-    printf("Liste thèmes créé avec succès\n");
-
-    int i, j;
-    for(i=1; i<=nb_themes; i++) //On rempli tous les thèmes
+    for(j=(MAX_ARTICLE/2); j<=MAX_ARTICLE; j++)  //On rempli l'autre moitié avec VIDE
     {
-        liste_themes[i].numero = i;
-
-        for(j=1; j<(MAX_ARTICLE/2); j++)  //On rempli la moitié des articles de ce thème
-        {
-            strcpy(liste_themes[i].article[j], generer_texte_aleatoire());
-            //printf("article %d\n", j);
-        }
-        for(j=(MAX_ARTICLE/2); j<=MAX_ARTICLE; j++)  //On rempli l'autre moitié avec VIDE
-        {
-            strcpy(liste_themes[i].article[j], "VIDE");
-            //printf("%d article %d\n", MAX_ARTICLE, j);
-        }
-
+      strcpy(liste_themes[i].article[j], "VIDE");
+      //printf("%d article %d\n", MAX_ARTICLE, j);
     }
+    
+  }
 
-    printf("Liste des thèmes rempli avec succès\n");
+  printf("Liste des thèmes rempli avec succès\n");
 }
 
 void stockage_smp(char* fichier, int code)

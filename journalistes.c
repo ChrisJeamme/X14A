@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     if (requete == 'c' || requete == 'e')     //Consultation ou Effacement
     {
         /*Création d'une clé */
-        cle = ftok("requete_journaliste", 'a');
+        cle = ftok("requete_journaliste", 1);
 
         /*Création d'une file de message*/
         int id_file = msgget(cle, 0666 | IPC_CREAT | IPC_PRIVATE);
