@@ -19,6 +19,11 @@
 /*       BRUYERE Dimitri         */
 /*********************************/
 
+struct contenu
+{
+    long type;
+    char texte[1000];
+};
 
 int main(int argc, char* argv[])
 {
@@ -29,16 +34,45 @@ int main(int argc, char* argv[])
             exit(-1);
         }
     
-    printf("\nprog : %s nb_archivistes %s requete : %s \ntheme : %s texte : %s\n",argv[0],argv[1],argv[2], argv[3], argv[4]);
+    // printf("\nprog : %s nb_archivistes %s requete : %s \ntheme : %s texte : %s\n",argv[0],argv[1],argv[2], argv[3], argv[4]);
 
     int nb_archivistes = atoi(argv[1]);
 
     char requete = argv[2][0];
     int num_theme = atoi(argv[3]);  //Numéro du segment de mémoire contenant les articles du thème.
+    key_t cle;
 
-    if (requete == 'c')     //Consultation
+    if (requete == 'c' || requete == 'e')     //Consultation ou Effacement
     {
         int num_article = atoi(argv[4]);    //Numéro de l'article à consulter
+        
+        /*Création d'une clé */
+        cle = ftok("requete_journaliste", 'a');
+
+        /*Création d'une file de message*/
+        int id_file = msgget(cle, 0666 | IPC_CREAT | IPC_PRIVATE);
+        if (id_file == -1)
+        {
+            perror("Erreur de création de la file de messages");
+            exit(EXIT_FAILURE);
+        }
+
+        /*Création du message*/
+        struct contenu message;
+        message.type=1;
+        strcpy(message.texte, "coucou c'est moi !\n");
+        int taille = strlen(message.texte);
+
+        /*Envoi du message*/
+        int envoi = msgsnd(id_file, &message, taille+1, 0);
+        if (envoi == -1)
+        {
+            perror("Erreur d'envoi du message");
+            exit(EXIT_FAILURE);
+        }
+        printf("journaliste : Message bien envoyé \n");
+
+        
         /* Il faudra vérifier si le numéro de l'article à consulter n'est pas supérieur au nombre d'articles du thème*/
         /* et avertir le journaliste si c'est le cas*/
     }
@@ -47,13 +81,34 @@ int main(int argc, char* argv[])
     {
         char texte_article[4];    //Texte de l'article
         strcpy(texte_article, argv[4]);
-    }
 
-    if (requete == 'e')     //Effacement
-    {
-        int num_article = atoi(argv[4]);    //Numéro de l'article à effacer
-        /* Il faudra vérifier si le numéro de l'article à consulter n'est pas supérieur au nombre d'articles du thème*/
-        /* et avertir le journaliste si c'est le cas*/
+
+        /*Création d'une clé */
+        cle = ftok("requete_journaliste", 'a');
+
+        /*Création d'une file de message*/
+        int id_file = msgget(cle, 0666 | IPC_CREAT | IPC_PRIVATE);
+        if (id_file == -1)
+        {
+            perror("Erreur de création de la file de messages");
+            exit(EXIT_FAILURE);
+        }
+
+        /*Création du message*/
+        struct contenu message;
+        message.type=1;
+        strcpy(message.texte, "coucou c'est moi !\n");
+        int taille = strlen(message.texte);
+
+        /*Envoi du message*/
+        int envoi = msgsnd(id_file, &message, taille+1, 0);
+        if (envoi == -1)
+        {
+            perror("Erreur d'envoi du message");
+            exit(EXIT_FAILURE);
+        }
+        printf("journaliste : Message bien envoyé \n");
+
     }
 
     exit (0);

@@ -109,7 +109,7 @@ int main(int argc, char* argv[], char* envp[])
         else
         {
             fprintf(stderr, "Problème de mémoire partagé (initial)\n");
-            exit(-1);
+            //exit(-1);
         }
         
         //shmctl(memoire_p, IPC_RMID, NULL);
