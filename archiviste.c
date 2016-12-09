@@ -29,6 +29,7 @@ struct contenu
 int main(int argc, char* argv[])
 {
     /* Vérification du nombre d'arguments */
+    printf("archiviste : Je suis le numero : %s\n\n", argv[1]);
 
         if (argc != 3)  //Si il n'y a pas 2 arguments
         {
@@ -42,7 +43,7 @@ int main(int argc, char* argv[])
 
     /* Récupération ensembles de mémoire partagé */
         
-        int* test = recup_smp('z');
+        //int* test = recup_smp('z');
 
     /* Récupération file de messages*/
 
@@ -87,7 +88,7 @@ int* recup_smp(char id)
 
     if((memoire_p = shmget(cle_smp, 0, 0) == -1))
     {
-        fprintf(stderr, "Problème de mémoire partagé (archiviste)\n");
+        perror("Problème de mémoire partagé (archiviste)\n");
         exit(-1);
     }
     else

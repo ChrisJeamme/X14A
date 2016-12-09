@@ -27,10 +27,12 @@
 void terminaison_fils(int signal);
 char* demande_archive();
 void le_gros_sigaction();
+char* generer_texte_aleatoire();
 
 pid_t *liste_pid;
 int nb_archivistes;
 int nb_themes;
+int memoire_p;
 
 int main(int argc, char* argv[], char* envp[])
 {
@@ -64,7 +66,9 @@ int main(int argc, char* argv[], char* envp[])
         for(i=0; i<nb_archivistes; i++) 
         {
             pid_t pid = fork();  //Création de l'archiviste
-
+            char num_ordre[10]="";
+            sprintf(num_ordre, "%d", i+1);  //Convertion du numero en chaine pour le transmettre en paramètre à arhiviste.
+            
             if(pid == -1)   //Erreur
             {
                 fprintf(stderr, "Erreur de fork\n");
@@ -73,7 +77,7 @@ int main(int argc, char* argv[], char* envp[])
             if(pid == 0)    //Fils
             {
                 //printf("Lancement du fils %d\n", pid);
-                char* arguments[] = {"archiviste", "0", argv[2], NULL}; //Numéro d'ordre , Nombre de thèmes
+                char* arguments[] = {"archiviste", num_ordre, argv[2], NULL}; //Numéro d'ordre , Nombre de thèmes
                 execve("archiviste", arguments, envp);
                 while(1);
             }
@@ -92,24 +96,23 @@ int main(int argc, char* argv[], char* envp[])
         // {
                 
         // }
-        int memoire_p;
-        int* entier_p;
-        key_t cle_smp = ftok ("z", 'z'); //12345;
+        // int* entier_p;
+        // key_t cle_smp = ftok ("z", 'z'); //12345;
         
-        if((memoire_p = shmget(cle_smp, sizeof(int), IPC_CREAT | IPC_EXCL | 0660 )) != -1)
-        {
-            if((entier_p = shmat(memoire_p, NULL, 0)))
-            {
-                *entier_p = 5;
-                printf("Wesh wesh, je fou mon entier %d", *entier_p);
-                shmdt(&entier_p);
-            }
-        }
-        else
-        {
-            fprintf(stderr, "Problème de mémoire partagé (initial)\n");
-            //exit(-1);
-        }
+        // if((memoire_p = shmget(cle_smp, sizeof(int), IPC_CREAT | 0660 )) != -1)
+        // {
+        //     if((entier_p = shmat(memoire_p, NULL, 0)))
+        //     {
+        //         *entier_p = 5;
+        //         printf("Wesh wesh, je fou mon entier %d\n", *entier_p);
+        //         shmdt(&entier_p);
+        //     }
+        // }
+        // else
+        // {
+        //     fprintf(stderr, "Problème de mémoire partagé (initial)\n");
+        //     //exit(-1);
+        // }
         
         //shmctl(memoire_p, IPC_RMID, NULL);
 
@@ -120,7 +123,10 @@ int main(int argc, char* argv[], char* envp[])
         {
             pid_t pid = fork();
             char *requete = demande_archive();
-            char *theme = "3";
+            char theme[10] = "3";
+            int num_theme = rand()%nb_themes+1; //Thème aléatoire 
+            sprintf(theme, "%d", num_theme);    //Convertion de num_theme en chaine pour le transmettre au journaliste en parametre
+
             char *texte;
             if (requete[0]=='p')    //publication
             {
@@ -128,7 +134,9 @@ int main(int argc, char* argv[], char* envp[])
             }
             else 
             {
-                texte = "12";     //numero de l'article
+                int num_article = rand()%15+1;  //numéro d'article aléatoire
+                //sprintf(texte, "%d", num_article);  //convertion en chaine
+                texte="12";
             }
 
             if(pid == -1)   //Erreur
@@ -157,12 +165,13 @@ int main(int argc, char* argv[], char* envp[])
 
 void terminaison_fils(int signal)
 {
-    printf("Demande de terminaison des fils\n");
+    printf("Demande de terminaison des fils (signal %d)\n", signal);
     int i;
     for(i=0; i<nb_archivistes; i++)
     {
         kill(liste_pid[i], SIGKILL);    //On envoi SIGTERM à tout les archivistes
     }
+    //shmctl(memoire_p, IPC_RMID, NULL);
     exit(-1);
 }
 
@@ -212,4 +221,15 @@ void le_gros_sigaction()
     {
         sigaction(i, &s_terminaison_fils, 0); //Ajout de la règle pour SIG**** = i
     }
+}
+
+char *generer_texte_aleatoire()
+{
+    char *chaine="aaaa";
+    int i;
+    for (i=0; i<4; i++)
+    {
+        chaine[i]= (char)(rand()%(122-97)+97);
+    }
+    return chaine;
 }
