@@ -161,6 +161,7 @@ char* demande_archive()
     return "e";       //effacement
 }
 
+/* Tous les signaux sauf SIGKILL et SIGCHLD vont lancer "terminaison_fils" */
 void le_gros_sigaction()
 {
     //Gestionnaire
