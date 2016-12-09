@@ -279,6 +279,8 @@ int suppr_article(int numero_theme, int numero_article)
 /* Affichage du tableu de structure theme */
 void afficher_liste_themes()
 {
+	recup_tout_smp();	//On update la liste des thèmes
+
 	if(liste_themes == NULL)
 	{
 		perror("Liste de thèmes non initialisé\n");
