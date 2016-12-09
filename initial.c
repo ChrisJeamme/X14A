@@ -29,7 +29,7 @@ void terminaison_fils(int signal);
 char* demande_archive();
 void le_gros_sigaction();
 char* generer_texte_aleatoire();
-void stockage_smp(char* fichier, int code);
+void stockage_smp(int code);
 
 pid_t *liste_pid;
 int nb_archivistes;
@@ -64,9 +64,7 @@ int main(int argc, char* argv[], char* envp[])
     
     /* Création liste des thèmes et partage en SMP*/
 
-        //initialiser_liste_themes();
-        //afficher_liste_themes();
-        stockage_smp("initial.c", 'z');
+        stockage_tout_theme();
 
     /* Création des archivistes*/
         liste_pid = malloc(nb_archivistes * sizeof(pid_t)); //pour stocker le pid de chacun des archivistes
@@ -206,14 +204,18 @@ char* generer_texte_aleatoire()
 
 /* Fonctions SMP */
 
-void stockage_smp(char* fichier, int code)
+void stockage_tout_theme()
 {
-	key_t cle = ftok("initial.c", 'z');
-	if (cle == -1)
+	int i;
+	for(i=1; i<nb_themes+1; i++)
 	{
-		perror("ftok");
-		exit(EXIT_FAILURE);
+		stockage_smp(i+1);
 	}
+}
+
+void stockage_smp(int code)
+{
+	key_t cle = code;
 
 	char* article;
 
@@ -231,8 +233,6 @@ void stockage_smp(char* fichier, int code)
 			{
 				strcat(article, "VIDE");
 			}
-
-			printf("Articles: %s\n", article);
 
 			shmdt(&article);
 		}
