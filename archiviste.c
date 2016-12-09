@@ -75,7 +75,6 @@ int main(int argc, char* argv[])
         recup_tout_smp();
 		//vrai_ajout_article(2, "zizi");
 
-      int semaphore = 0;
 
     /* Récupération file de messages*/
 
@@ -110,16 +109,17 @@ int main(int argc, char* argv[])
 			{
 				if (strcmp(liste_themes[message.theme].article[atoi(message.texte)], "VIDE")!=0)
 				{
-					//envoyer message au journaliste avec le contenu de l'article
+					printf("Votre article est : %s\n", liste_themes[message.theme].article[atoi(message.texte)]);
 				}
 				else 
 				{
-					//envoyer message lui disant qu'il n'y a pas cet article.
+					printf("Il n'y a pas d'article numero %d dans le theme %d", atoi(message.texte), message.theme);
 				}
 			}
 			else // effacement
 			{
 				suppr_article(message.theme, atoi(message.texte));
+				printf("L'aricle a ete efface.");
 			}
 			afficher_liste_themes();
             
