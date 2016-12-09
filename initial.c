@@ -26,6 +26,7 @@ char* demande_archive();
 void le_gros_sigaction();
 char* generer_texte_aleatoire();
 void stockage_smp(int code);
+void stockage_tout_theme();
 
 pid_t *liste_pid;
 int nb_archivistes;
@@ -144,7 +145,7 @@ void terminaison_fils(int signal)
     int i;
     for(i=0; i<nb_archivistes; i++)
     {
-        kill(liste_pid[i], SIGKILL);    //On envoi SIGTERM à tout les archivistes
+        kill(liste_pid[i], SIGUSR1);    //On envoi SIGUSR1 à tout les archivistes
     }
     shmctl(memoire_p, IPC_RMID, NULL);
     exit(-1);

@@ -27,6 +27,8 @@ int suppr_article(int numero_theme, int numero_article);
 void afficher_liste_themes();
 void initialiser_liste_themes();
 void suppr_smp();
+void archiviste_sigaction();
+void terminer_archiviste(int signal);
 
 int nb_themes;
 int memoire_p = -1;
@@ -61,7 +63,7 @@ int main(int argc, char* argv[])
         }
 
     /* Récupération des arguments */
-        int numero_ordre = atoi(argv[1]);
+        //int numero_ordre = atoi(argv[1]);
         nb_themes = atoi(argv[2]);
         
 
@@ -132,6 +134,7 @@ int main(int argc, char* argv[])
     exit(0);
 }
 
+/* Récupère les segment de mémoire partagé pour tous les thèmes (nb_themes thèmes) */
 void recup_tout_smp()
 {
   int i;
@@ -141,6 +144,7 @@ void recup_tout_smp()
   }
 }
 
+/* Récupère le segement partagé pour un numéro de thème donné */
 void recup_smp(int numero_theme)
 {
   key_t cle_m = numero_theme;
@@ -150,7 +154,7 @@ void recup_smp(int numero_theme)
 
   if((memoire_p = shmget(cle_m, 0, 0)) != -1)
   {
-    if(article = shmat(memoire_p, 0, 0))
+    if((article = shmat(memoire_p, 0, 0)))
     {
 		//Split des articles
 		int j;
@@ -170,6 +174,7 @@ void recup_smp(int numero_theme)
   }
 }
 
+/* Fonction de modification de liste_themes */
 int ajout_article(int numero_theme, char* article)
 {
   int j;
@@ -200,6 +205,7 @@ int ajout_article(int numero_theme, char* article)
   return j; //On renvoi le numéro de l'article dans le thème
 }
 
+/* Fonction de modification de liste_themes */
 int modif_article(int numero_theme, int numero_article, char* article)
 {
   int j;
@@ -239,6 +245,7 @@ int modif_article(int numero_theme, int numero_article, char* article)
   return j; //On renvoi le numéro de l'article dans le thème
 }
 
+/* Fonction de modification de liste_themes */
 int suppr_article(int numero_theme, int numero_article)
 {
   if(numero_theme < 1 || numero_theme > nb_themes)
@@ -269,6 +276,7 @@ int suppr_article(int numero_theme, int numero_article)
   return 0;
 }
 
+/* Affichage du tableu de structure theme */
 void afficher_liste_themes()
 {
 	if(liste_themes == NULL)
@@ -288,10 +296,11 @@ void afficher_liste_themes()
 	} 
 }
 
+/* Initialise le tableau de structure theme (vide) */
 void initialiser_liste_themes()
 {
 	liste_themes = NULL;
-	liste_themes = (theme*) malloc((nb_themes+1) * sizeof(theme));
+	liste_themes = (theme*) malloc((nb_themes+1) * sizeof(theme));	//Allocation de la liste des thèmes
 	if (liste_themes == NULL)
 	{
 		perror("malloc");
@@ -299,7 +308,26 @@ void initialiser_liste_themes()
 	printf("Liste thèmes créé avec succès\n");
 }
 
+/* Supprimer le segment partagé */
 void suppr_smp()
 {
     shmctl(memoire_p, IPC_RMID, NULL);
+}
+
+/* Sigaction pour SIGUSR1 (signal de fermeture "propre" donné depuis initial) */
+void archiviste_sigaction()
+{
+    struct sigaction s_terminer_archiviste;        //Création gestionnaire
+    s_terminer_archiviste.sa_handler = &terminer_archiviste;   //Adresse fonction du gestionnaire
+    s_terminer_archiviste.sa_flags = 0;            //Ignoré
+    sigemptyset(&s_terminer_archiviste.sa_mask);   //Aucun signaux masqué => ensemble signal vide dans sa_mask
+
+    sigaction(SIGUSR1, &s_terminer_archiviste, 0);	//Signal pour quitter "proprement"
+}
+
+/* Fonction déclenché par le signal de fermeture "propre" donné depuis initial */
+void terminer_archiviste(int signal)
+{
+    suppr_smp();	//On supprime le segment partagé
+    exit(-1);
 }
