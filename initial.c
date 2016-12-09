@@ -75,6 +75,7 @@ int main(int argc, char* argv[], char* envp[])
 
         initialiser_liste_themes();
         afficher_liste_themes();
+        stockage_smp("initial.c", 'z');
 
     /* Création des archivistes*/
         liste_pid = malloc(nb_archivistes * sizeof(pid_t)); //pour stocker le pid de chacun des archivistes
@@ -182,21 +183,8 @@ void le_gros_sigaction()
     s_terminaison_fils.sa_flags = 0;            //Ignoré
     sigemptyset(&s_terminaison_fils.sa_mask);   //Aucun signaux masqué => ensemble signal vide dans sa_mask
 
-                /*//Création de l'ensemble de signaux à écouter
-                sigset_t signaux;
-                sigemptyset(&signaux);
-                sigfillset(&signaux);
-                if(!sigismember(&signaux, SIGKILL) || !sigismember(&signaux, SIGCHLD))
-                {
-                    fprintf(stderr, "Erreur improbable\n");
-                    exit(-1);
-                }
-                sigdelset(&signaux, SIGKILL);
-                sigdelset(&signaux, SIGCHLD);
-                sigwaitinfo(&signaux, NULL);*/
-
     //Algorithme de pataras mais au moins on ne fait pas un seul for avec un if à chaque boucle !
-    
+
     int i;
     for(i=1; i<9; i++)  //On coupe à SIGKILL
     {
@@ -230,7 +218,7 @@ char* generer_texte_aleatoire()
 void initialiser_liste_themes()
 {
   liste_themes = NULL;
-  liste_themes = (theme*) malloc(nb_themes * sizeof(theme));
+  liste_themes = (theme*) malloc(nb_themes+1 * sizeof(theme));
   if (liste_themes == NULL)
   {
     perror("malloc");

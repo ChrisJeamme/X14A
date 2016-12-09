@@ -20,6 +20,7 @@
 /*       BRUYERE Dimitri         */
 /*********************************/
 
+void recup_tout_smp();
 void recup_smp(char* fichier, int code);
 int ajout_article(int numero_theme, char* article);
 int suppr_article(int numero_theme, int numero_article);
@@ -63,6 +64,7 @@ int main(int argc, char* argv[])
 
     /* Récupération ensembles de mémoire partagé */
         
+        //recup_tout_smp();
         recup_smp("initial.c", 'z');   //Dans memoire_p
 
     /* Récupération file de messages*/
@@ -94,13 +96,21 @@ int main(int argc, char* argv[])
             
         }
 
-    
-
-        //printf("Salut ! Moi c'est le fils %d, ordre:%d nb_themes:%d\n", getpid(), numero_ordre, nombre_themes);
-
     while(1);
 
     exit(0);
+}
+
+void recup_tout_smp()
+{
+  int i;
+  char nom[3];
+  for(i=1; i<=nb_themes; i++)
+  {
+    sprintf(nom,"%d",i);
+    printf("On veut récupérer recup_smp(%s, %d)", nom, i);
+    //recup_smp(nom,i);
+  }
 }
 
 void recup_smp(char* fichier, int code)
@@ -132,24 +142,68 @@ int ajout_article(int numero_theme, char* article)
 {
   int j;
   
-  if(memoire_p == -1)
+  if(numero_theme < 1 || numero_theme > nb_themes)
   {
-    perror("smp non récupéré");
+    fprintf(stderr,"Numero de thème incorrect\n");
+    return -1;
   }
-  else
+
+  if(liste_themes == NULL)
   {
-    for(j=1; strcmp(liste_themes[numero_theme].article[j],"VIDE")!=0 && j<MAX_ARTICLE; j++){;} //On parcourt jusqu'à tomber sur la prochaine place libre
-    
-    if(j == MAX_ARTICLE)  //Max atteint
-    {
-      fprintf(stderr,"Nombre d'article max atteint pour le thème %d", numero_theme);
-    }
-    else                    //Case vide trouvé
-    {
-      strcpy(liste_themes[numero_theme].article[j], article); //On place le nouvel article;
-    }
+    fprintf(stderr,"Liste de thème non initialisé\n");
+    return -1;
   }
   
+  for(j=1; strcmp(liste_themes[numero_theme].article[j],"VIDE")!=0 && j<MAX_ARTICLE; j++){;} //On parcourt jusqu'à tomber sur la prochaine place libre
+  
+  if(j == MAX_ARTICLE)  //Max atteint
+  {
+    fprintf(stderr,"Nombre d'article max atteint pour le thème %d", numero_theme);
+  }
+  else                    //Case vide trouvé
+  {
+    strcpy(liste_themes[numero_theme].article[j], article); //On place le nouvel article;
+  }
+  
+  return j; //On renvoi le numéro de l'article dans le thème
+}
+
+int modif_article(int numero_theme, int numero_article, char* article)
+{
+  int j;
+
+  if(numero_theme < 1 || numero_theme > nb_themes)
+  {
+    fprintf(stderr,"Numero de thème incorrect\n");
+    return -1;
+  }
+  
+  if(numero_article < 1 || numero_article > MAX_ARTICLE)
+  {
+    fprintf(stderr,"Numero d'article incorrect\n");
+    return -1;
+  }
+
+  if(liste_themes == NULL)
+  {
+    fprintf(stderr,"Liste de thème non initialisé\n");
+    return -1;
+  }
+
+  if(strcpy(liste_themes[numero_theme].article[numero_article], "VIDE"))
+  {
+    fprintf(stderr,"L'article est vide\n");
+    return -1;
+  }
+  
+  for(j=1; strcmp(liste_themes[numero_theme].article[j],"VIDE")!=0 && j<MAX_ARTICLE; j++){;} //On parcourt jusqu'à tomber sur la prochaine place libre
+  
+  printf("L'article %d du thème %d (%s) a été modifié par: ", numero_article, numero_theme, liste_themes[numero_theme].article[j]);
+
+  strcpy(liste_themes[numero_theme].article[j], article); //On modifie l'article
+
+  printf("%s", liste_themes[numero_theme].article[j]);
+
   return j; //On renvoi le numéro de l'article dans le thème
 }
 
