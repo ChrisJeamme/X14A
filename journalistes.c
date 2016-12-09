@@ -41,8 +41,6 @@ int main(int argc, char* argv[])
     
     printf("\nnb_archivistes %s \nrequete : %s \ntheme : %s \ntexte : %s\n\n",argv[1],argv[2], argv[3], argv[4]);
 
-    int semaphore;
-    int nb_archivistes = atoi(argv[1]);
 
     char requete = argv[2][0];
     int num_theme = atoi(argv[3]);  //Numéro du segment de mémoire contenant les articles du thème.

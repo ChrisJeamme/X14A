@@ -76,7 +76,6 @@ int main(int argc, char* argv[])
 		vrai_ajout_article(1, "zizi");
         afficher_liste_themes();
 
-      int semaphore = 0;
 
     /* Récupération file de messages*/
 
