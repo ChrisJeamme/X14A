@@ -30,6 +30,7 @@ char* demande_archive();
 void le_gros_sigaction();
 char* generer_texte_aleatoire();
 void stockage_smp(int code);
+void stockage_tout_theme();
 
 pid_t *liste_pid;
 int nb_archivistes;
