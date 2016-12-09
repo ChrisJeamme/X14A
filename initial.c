@@ -49,7 +49,7 @@ int main(int argc, char* argv[], char* envp[])
         nb_archivistes = atoi(argv[1]);
         nb_themes = atoi(argv[2]);
 
-    /*Vérification des arguments*/
+    /* Vérification des arguments */
         if (nb_archivistes < 2 || nb_themes < 2)
         {
             fprintf(stderr, "Usage : initial <nb_archivistes> <nb_themes>\n"
@@ -57,7 +57,7 @@ int main(int argc, char* argv[], char* envp[])
                             "\tnb_themes >1\n\n");
             exit(-1);
         }
-
+    
     /* Création des archivistes*/
         liste_pid = malloc(nb_archivistes * sizeof(pid_t)); //pour stocker le pid de chacun des archivistes
         int i;
@@ -84,8 +84,37 @@ int main(int argc, char* argv[], char* envp[])
             }
         }
 
-    /*Gestion des signaux de terminaison des fils*/
+    /* Gestion des signaux de terminaison des fils */
         le_gros_sigaction(); //Ajout de la règle pour tous les signaux sauf SIGKILL et SIGCHLD
+
+    /* Création des segments de mémoire partagé */
+        // for(i=0; i<nb_themes; i++)
+        // {
+
+        // }
+
+        int memoire_p;
+        int* entier_p;
+        key_t cle_smp = ftok ("smp", 'b');
+        
+        if((memoire_p = shmget(cle_smp, sizeof(int), IPC_CREAT | IPC_EXCL | 0660)) != -1)
+        {
+            if((entier_p = shmat(memoire_p, NULL, 0)))
+            {
+                *entier_p = 5;
+                printf("Wesh wesh, je fou mon entier %d", *entier_p);
+                shmdt(&entier_p);
+            }
+        }
+        else
+        {
+            fprintf(stderr, "Problème de mémoire partagé (initial)\n");
+            exit(-1);
+        }
+        
+        //shmctl(memoire_p, IPC_RMID, NULL);
+
+        //TODO Détacher les SMP
 
     /* Création des journalistes */
         while(1)
@@ -121,6 +150,7 @@ int main(int argc, char* argv[], char* envp[])
                 //printf("%d\n",liste_pid[i]);
                 i++;
             }
+            sleep(2);
         }
 
     return 0;  
@@ -133,7 +163,6 @@ void terminaison_fils(int signal)
     for(i=0; i<nb_archivistes; i++)
     {
         kill(liste_pid[i], SIGKILL);    //On envoi SIGTERM à tout les archivistes
-        printf("Archiviste %d à priori terminé\n", liste_pid[i]);
     }
     exit(-1);
 }

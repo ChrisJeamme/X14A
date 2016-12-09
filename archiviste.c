@@ -19,10 +19,8 @@
 /*********************************/
 
 int main(int argc, char* argv[])
-{    
-    printf("%s %s %s",argv[0],argv[1],argv[2]);
-
-    /*Vérification du nombre d'arguments*/
+{
+    /* Vérification du nombre d'arguments */
         if (argc != 3)  //Si il n'y a pas 2 arguments
         {
             fprintf(stderr, "Erreur de nombre d'argument pour archiviste.c (argc = %d)\n", argc);
@@ -33,7 +31,25 @@ int main(int argc, char* argv[])
         int numero_ordre = atoi(argv[1]);
         int nombre_themes = atoi(argv[2]);
 
-    /* Récupération file de messages*/
+    /* Récupération ensembles de mémoire partagé */
+        key_t cle_smp = ftok ("smp", 'b');
+        int memoire_p;
+        int* entier_p;
+
+        if((memoire_p = shmget(cle_smp, 0, 0) == -1))
+        {
+            fprintf(stderr, "Problème de mémoire partagé (archiviste)\n");
+            exit(-1);
+        }
+        else
+        {
+            if((entier_p = shmat(memoire_p, NULL, 0)))
+            {
+                printf("Wesh wesh, j'ai trouvé un entier il est à qui? %d\n", *entier_p);
+            }
+        }
+
+    /* Récupération file de messages */
         key_t cle = ftok("journalistes.c", 'a');
         int id = msgget(cle, 0777 | IPC_CREAT | IPC_PRIVATE | IPC_EXCL);   //ID de la file de messages   
         if (id == -1)
@@ -45,8 +61,9 @@ int main(int argc, char* argv[])
         //char* message;
         //msgrcv (id, *message, 4, IPC_NOWAIT | MSG_NOERROR);
 
+    
 
-        printf("Salut ! Moi c'est le fils %d, ordre:%d nb_themes:%d\n", getpid(), numero_ordre, nombre_themes);
+        //printf("Salut ! Moi c'est le fils %d, ordre:%d nb_themes:%d\n", getpid(), numero_ordre, nombre_themes);
 
     while(1);
 
