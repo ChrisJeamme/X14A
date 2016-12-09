@@ -149,7 +149,7 @@ void terminaison_fils(int signal)
     int i;
     for(i=0; i<nb_archivistes; i++)
     {
-        kill(liste_pid[i], SIGKILL);    //On envoi SIGTERM à tout les archivistes
+        kill(liste_pid[i], SIGUSR1);    //On envoi SIGUSR1 à tout les archivistes
     }
     shmctl(memoire_p, IPC_RMID, NULL);
     exit(-1);
