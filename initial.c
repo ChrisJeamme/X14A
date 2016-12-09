@@ -70,8 +70,7 @@ int main(int argc, char* argv[], char* envp[])
     /* Création liste des thèmes et partage en SMP*/
 
         initialiser_liste_themes();
-
-        //afficher_liste_themes();
+        afficher_liste_themes();
 
     /* Création des archivistes*/
         liste_pid = malloc(nb_archivistes * sizeof(pid_t)); //pour stocker le pid de chacun des archivistes
@@ -157,7 +156,7 @@ void terminaison_fils(int signal)
     {
         kill(liste_pid[i], SIGKILL);    //On envoi SIGTERM à tout les archivistes
     }
-    //shmctl(memoire_p, IPC_RMID, NULL);
+    shmctl(memoire_p, IPC_RMID, NULL);
     exit(-1);
 }
 
@@ -229,7 +228,7 @@ int file_message()
 void initialiser_liste_themes()
 {
     liste_themes = NULL;
-    liste_themes = (theme*) malloc(nb_themes * sizeof(theme));
+    liste_themes = (theme*) malloc((nb_themes+1) * sizeof(theme));
     if (liste_themes == NULL)
     {
         perror("malloc");
@@ -240,16 +239,18 @@ void initialiser_liste_themes()
     for(i=1; i<=nb_themes; i++) //On rempli tous les thèmes
     {
         liste_themes[i].numero = i;
-        
+
         for(j=1; j<(MAX_ARTICLE/2); j++)  //On rempli la moitié des articles de ce thème
         {
             strcpy(liste_themes[i].article[j], generer_texte_aleatoire());
+            //printf("article %d\n", j);
         }
-            for(j=(MAX_ARTICLE/2); j<=MAX_ARTICLE; j++)  //On rempli l'autre moitié avec VIDE
+        for(j=(MAX_ARTICLE/2); j<=MAX_ARTICLE; j++)  //On rempli l'autre moitié avec VIDE
         {
             strcpy(liste_themes[i].article[j], "VIDE");
+            //printf("%d article %d\n", MAX_ARTICLE, j);
         }
-        
+
     }
 
     printf("Liste des thèmes rempli avec succès\n");
@@ -266,7 +267,7 @@ void stockage_smp(char* fichier, int code)
 
   char* charal;
 
-  if((memoire_p = shmget(cle, nb_themes*sizeof(theme), IPC_CREAT | 0660)) != -1)
+  if((memoire_p = shmget(cle, 1024, IPC_CREAT | 0660)) != -1)
   {
     if((charal = shmat(memoire_p, 0, 0)))
     {

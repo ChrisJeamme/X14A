@@ -114,7 +114,7 @@ void recup_smp(char* fichier, int code)
   
   char* charal;
 
-  if((memoire_p = shmget(cle_m,0, 0)) != -1)
+  if((memoire_p = shmget(cle_m, 0, 0)) != -1)
   {
     if((charal = shmat(memoire_p, NULL, 0)))
     {
