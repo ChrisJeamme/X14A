@@ -25,20 +25,11 @@
 /* 2 pour une publication */
 /* 3 pour une suppression */
 
-typedef struct
-{
-  int numero;
-  char article[MAX_ARTICLE][5];
-}theme;
-theme* liste_themes;    //La liste des thèmes
-
 void terminaison_fils(int signal);
 char* demande_archive();
 void le_gros_sigaction();
 char* generer_texte_aleatoire();
-void initialiser_liste_themes();
 void stockage_smp(char* fichier, int code);
-void afficher_liste_themes();
 
 pid_t *liste_pid;
 int nb_archivistes;
@@ -73,8 +64,8 @@ int main(int argc, char* argv[], char* envp[])
     
     /* Création liste des thèmes et partage en SMP*/
 
-        initialiser_liste_themes();
-        afficher_liste_themes();
+        //initialiser_liste_themes();
+        //afficher_liste_themes();
         stockage_smp("initial.c", 'z');
 
     /* Création des archivistes*/
@@ -215,80 +206,39 @@ char* generer_texte_aleatoire()
 
 /* Fonctions SMP */
 
-void initialiser_liste_themes()
-{
-  liste_themes = NULL;
-  liste_themes = (theme*) malloc(nb_themes+1 * sizeof(theme));
-  if (liste_themes == NULL)
-  {
-    perror("malloc");
-  }
-  printf("Liste thèmes créé avec succès\n");
-
-  int i, j;
-  for(i=1; i<=nb_themes; i++) //On rempli tous les thèmes
-  {
-    liste_themes[i].numero = i;
-    
-    for(j=1; j<(MAX_ARTICLE/2); j++)  //On rempli la moitié des articles de ce thème
-    {
-      strcpy(liste_themes[i].article[j], generer_texte_aleatoire());
-      //printf("article %d\n", j);
-    }
-    for(j=(MAX_ARTICLE/2); j<=MAX_ARTICLE; j++)  //On rempli l'autre moitié avec VIDE
-    {
-      strcpy(liste_themes[i].article[j], "VIDE");
-      //printf("%d article %d\n", MAX_ARTICLE, j);
-    }
-    
-  }
-
-  printf("Liste des thèmes rempli avec succès\n");
-}
-
 void stockage_smp(char* fichier, int code)
 {
-  key_t cle = ftok("initial.c", 'z');
-  if (cle == -1)
-  {
-    perror("ftok");
-    exit(EXIT_FAILURE);
-  }
+	key_t cle = ftok("initial.c", 'z');
+	if (cle == -1)
+	{
+		perror("ftok");
+		exit(EXIT_FAILURE);
+	}
 
-  char* charal;
+	char* article;
 
-  if((memoire_p = shmget(cle, 1024, IPC_CREAT | 0660)) != -1)
-  {
-    if((charal = shmat(memoire_p, 0, 0)))
-    {
-      *charal = 'a';
+	if((memoire_p = shmget(cle, (MAX_ARTICLE+2)*sizeof(char*)*5, IPC_CREAT | 0660)) != -1)
+	{
+		if((article = shmat(memoire_p, 0, 0)))
+		{
+			int j;
 
-      printf("Char: %c\n", *charal);
-      
-      shmdt(&charal);
-    }
-  }
-  else
-  {
-      perror("smhget a renvoyé -1...\n");
-  }
-}
+			for(j=1; j<(MAX_ARTICLE/2); j++)  //On rempli la moitié des articles de ce thème
+			{
+				strcat(article, generer_texte_aleatoire());
+			}
+			for(j=(MAX_ARTICLE/2); j<=MAX_ARTICLE; j++)  //On rempli l'autre moitié avec VIDE
+			{
+				strcat(article, "VIDE");
+			}
 
-void afficher_liste_themes()
-{
-  if(liste_themes == NULL)
-  {
-    perror("Liste de thèmes non initialisé\n");
-    exit(EXIT_FAILURE);
-  }
+			printf("Articles: %s\n", article);
 
-  int i, j;
-  for(i=1; i<=nb_themes; i++)
-  {
-    for(j=1; j<MAX_ARTICLE; j++)
-    {
-      printf("Thème %d | Article %d: %s\n", i, j, liste_themes[i].article[j]);
-    }
-    printf("\n");
-  } 
+			shmdt(&article);
+		}
+	}
+	else
+	{
+		perror("smhget a renvoyé -1...\n");
+	}
 }

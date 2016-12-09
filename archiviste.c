@@ -21,10 +21,11 @@
 /*********************************/
 
 void recup_tout_smp();
-void recup_smp(char* fichier, int code);
+void recup_smp(char* fichier, int code, int numero_theme);
 int ajout_article(int numero_theme, char* article);
 int suppr_article(int numero_theme, int numero_article);
 void afficher_liste_themes();
+void initialiser_liste_themes();
 void suppr_smp();
 
 int nb_themes;
@@ -61,11 +62,18 @@ int main(int argc, char* argv[])
     /* Récupération des arguments */
         int numero_ordre = atoi(argv[1]);
         nb_themes = atoi(argv[2]);
+        
 
     /* Récupération ensembles de mémoire partagé */
-        
+		
+        initialiser_liste_themes();
+
+		//afficher_liste_themes();
+
         //recup_tout_smp();
-        recup_smp("initial.c", 'z');   //Dans memoire_p
+        recup_smp("initial.c", 'z', 0);   //Dans memoire_p
+
+        //afficher_liste_themes();
 
     /* Récupération file de messages*/
 
@@ -113,7 +121,7 @@ void recup_tout_smp()
   }
 }
 
-void recup_smp(char* fichier, int code)
+void recup_smp(char* fichier, int code, int numero_theme)
 {
   key_t cle_m = ftok(fichier, code);
   if (cle_m == -1)
@@ -122,14 +130,22 @@ void recup_smp(char* fichier, int code)
     exit(EXIT_FAILURE);
   }
   
-  char* charal;
+  char* article;
 
   if((memoire_p = shmget(cle_m, 0, 0)) != -1)
   {
-    if((charal = shmat(memoire_p, NULL, 0)))
+    if(article = shmat(memoire_p, 0, 0))
     {
-      printf("Le char que j'ai récupéré: %c\n", *charal);
-      shmdt(charal);
+		//Split des articles
+		int j;
+		for(j=1; j<=MAX_ARTICLE; j++)
+		{
+        	snprintf(liste_themes[numero_theme].article[j], 5, "%s", article+j*4);
+			liste_themes[numero_theme].numero = numero_theme;
+		}
+
+      printf("Le tableau d'article que j'ai récupéré: %s\n", article[1]);
+      shmdt(&article);
     }
   }
   else
@@ -239,21 +255,32 @@ int suppr_article(int numero_theme, int numero_article)
 
 void afficher_liste_themes()
 {
-  if(liste_themes == NULL)
-  {
-    perror("Liste de thèmes non initialisé\n");
-    exit(EXIT_FAILURE);
-  }
+	if(liste_themes == NULL)
+	{
+		perror("Liste de thèmes non initialisé\n");
+		exit(EXIT_FAILURE);
+	}
 
-  int i, j;
-  for(i=1; i<=nb_themes; i++)
-  {
-    for(j=1; j<MAX_ARTICLE; j++)
-    {
-      printf("Thème %d | Article %d: %s\n", i, j, liste_themes[i].article[j]);
-    }
-    printf("\n");
-  } 
+	int i, j;
+	for(i=1; i<=nb_themes; i++)
+	{
+		for(j=1; j<MAX_ARTICLE; j++)
+		{
+			printf("Thème %d | Article %d: %s\n", i, j, liste_themes[i].article[j]);
+		}
+		printf("\n");
+	} 
+}
+
+void initialiser_liste_themes()
+{
+	liste_themes = NULL;
+	liste_themes = (theme*) malloc((nb_themes+1) * sizeof(theme));
+	if (liste_themes == NULL)
+	{
+		perror("malloc");
+	}
+	printf("Liste thèmes créé avec succès\n");
 }
 
 void suppr_smp()
