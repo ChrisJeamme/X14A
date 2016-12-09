@@ -24,6 +24,8 @@ void recup_tout_smp();
 void recup_smp(int code);
 int ajout_article(int numero_theme, char* article);
 int suppr_article(int numero_theme, int numero_article);
+int vrai_ajout_article(int numero_theme, char* article);
+int modif_article(int numero_theme, int numero_article, char* article);
 void afficher_liste_themes();
 void initialiser_liste_themes();
 void suppr_smp();
@@ -70,12 +72,8 @@ int main(int argc, char* argv[])
     /* Récupération ensembles de mémoire partagé */
 		
         initialiser_liste_themes();
-
-		//afficher_liste_themes();
-
         recup_tout_smp();
-        //recup_smp(2);   //Dans memoire_p
-
+		vrai_ajout_article(1, "zizi");
         afficher_liste_themes();
 
       int semaphore = 0;
@@ -177,6 +175,7 @@ void recup_smp(int numero_theme)
 /* Fonction de modification de liste_themes */
 int ajout_article(int numero_theme, char* article)
 {
+  recup_tout_smp();	//On update la liste des thèmes
   int j;
   
   if(numero_theme < 1 || numero_theme > nb_themes)
@@ -208,6 +207,8 @@ int ajout_article(int numero_theme, char* article)
 /* Fonction de modification de liste_themes */
 int modif_article(int numero_theme, int numero_article, char* article)
 {
+  recup_tout_smp();	//On update la liste des thèmes
+
   int j;
 
   if(numero_theme < 1 || numero_theme > nb_themes)
@@ -245,9 +246,66 @@ int modif_article(int numero_theme, int numero_article, char* article)
   return j; //On renvoi le numéro de l'article dans le thème
 }
 
+
+/* Fonction de modification du SMP avec update de liste_themes */
+int vrai_ajout_article(int numero_theme, char* article)
+{
+  recup_tout_smp();	//On update la liste des thèmes
+
+  int j;
+  
+  if(numero_theme < 1 || numero_theme > nb_themes)
+  {
+    fprintf(stderr,"Numero de thème incorrect\n");
+    return -1;
+  }
+
+  if(memoire_p == -1)
+  {
+    fprintf(stderr,"SMP non initialisé\n");
+    return -1;
+  }
+  
+  for(j=1; strcmp(liste_themes[numero_theme].article[j],"VIDE")!=0 && j<MAX_ARTICLE; j++){;} //On parcourt jusqu'à tomber sur la prochaine place libre
+  
+  if(j == MAX_ARTICLE)  //Max atteint
+  {
+    fprintf(stderr,"Nombre d'article max atteint pour le thème %d", numero_theme);
+  }
+  else                    //Case vide trouvé
+  {
+		key_t cle_m = numero_theme+1;
+	
+		char* article_smp;
+
+		if((memoire_p = shmget(cle_m, 0, 0)) != -1)
+		{
+			if((article_smp = shmat(memoire_p, 0, 0)))
+			{
+				int i;
+				printf("On modifie %d\n", j*4);
+				for(i=0; i<5; i++)
+				{
+					article_smp[j*4+i] = article[i];
+				}
+				shmdt(&article_smp);
+			}
+		}
+		else
+		{
+			perror("smhget de recup a renvoyé -1...\n");
+		}
+  }
+  
+  return j; //On renvoi le numéro de l'article dans le thème
+}
+
+
 /* Fonction de modification de liste_themes */
 int suppr_article(int numero_theme, int numero_article)
 {
+  recup_tout_smp();	//On update la liste des thèmes
+
   if(numero_theme < 1 || numero_theme > nb_themes)
   {
     fprintf(stderr,"Numero de thème incorrect\n");
