@@ -9,7 +9,9 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <string.h>
 
+#define MAX_ARTICLE 20
 
 /*********************************/
 /*        Coding Party           */
@@ -18,7 +20,14 @@
 /*       BRUYERE Dimitri         */
 /*********************************/
 
-int* recup_smp(char id);
+void recup_smp(char* fichier, int code);
+int ajout_article(int numero_theme, char* article);
+int suppr_article(int numero_theme, int numero_article);
+void afficher_liste_themes();
+void suppr_smp();
+
+int nb_themes;
+int memoire_p = -1;
 
 struct contenu
 {
@@ -28,6 +37,15 @@ struct contenu
     char texte[6];
     pid_t identite;
 };
+
+typedef struct
+{
+  int numero;
+  char article[MAX_ARTICLE][5];
+}theme;
+
+theme* liste_themes;
+
 
 int main(int argc, char* argv[])
 {
@@ -42,7 +60,7 @@ int main(int argc, char* argv[])
 
     /* Récupération des arguments */
         int numero_ordre = atoi(argv[1]);
-        int nombre_themes = atoi(argv[2]);
+        nb_themes = atoi(argv[2]);
 
     /* Récupération ensembles de mémoire partagé */
         
@@ -86,29 +104,106 @@ int main(int argc, char* argv[])
     exit(0);
 }
 
-int* recup_smp(char id)
+void recup_smp(char* fichier, int code)
 {
-    key_t cle_smp = ftok ("z", id);//12345;
-    int memoire_p;
-    int* entier_p;
+  key_t cle_m = ftok(fichier, code);
+  if (cle_m == -1)
+  {
+    perror("ftok");
+    exit(EXIT_FAILURE);
+  }
+  
+  char* charal;
 
-    if((memoire_p = shmget(cle_smp, 0, 0) == -1))
+  if((memoire_p = shmget(cle_m,0, 0)) != -1)
+  {
+    if((charal = shmat(memoire_p, NULL, 0)))
     {
-        perror("Problème de mémoire partagé (archiviste)\n");
-        exit(-1);
+      printf("Le char que j'ai récupéré: %c\n", *charal);
+      shmdt(charal);
     }
-    else
-    {
-        if((entier_p = shmat(memoire_p, NULL, 0)))
-        {
-            printf("Wesh wesh, j'ai trouvé un entier il est à qui? %d\n", *entier_p);
-        }
-        else
-        {
-            fprintf(stderr, "Là je sais plus quoi te dire\n");
-            exit(-1);
-        }
-    }
+  }
+  else
+  {
+      perror("smhget de recup a renvoyé -1...\n");
+  }
+}
 
-    return entier_p;
+int ajout_article(int numero_theme, char* article)
+{
+  int j;
+  
+  if(memoire_p == -1)
+  {
+    perror("smp non récupéré");
+  }
+  else
+  {
+    for(j=1; strcmp(liste_themes[numero_theme].article[j],"VIDE")!=0 && j<MAX_ARTICLE; j++){;} //On parcourt jusqu'à tomber sur la prochaine place libre
+    
+    if(j == MAX_ARTICLE)  //Max atteint
+    {
+      fprintf(stderr,"Nombre d'article max atteint pour le thème %d", numero_theme);
+    }
+    else                    //Case vide trouvé
+    {
+      strcpy(liste_themes[numero_theme].article[j], article); //On place le nouvel article;
+    }
+  }
+  
+  return j; //On renvoi le numéro de l'article dans le thème
+}
+
+int suppr_article(int numero_theme, int numero_article)
+{
+  if(numero_theme < 1 || numero_theme > nb_themes)
+  {
+    fprintf(stderr,"Numero de thème incorrect\n");
+    return -1;
+  }
+  
+  if(numero_article < 1 || numero_article > MAX_ARTICLE)
+  {
+    fprintf(stderr,"Numero d'article incorrect\n");
+    return -1;
+  }
+
+  if(liste_themes == NULL)
+  {
+    fprintf(stderr,"Liste de thème non initialisé\n");
+    return -1;
+  }
+
+  if(strcpy(liste_themes[numero_theme].article[numero_article], "VIDE"))
+  {
+    fprintf(stderr,"L'article est déjà vide\n");
+    return -1;
+  }
+
+  strcpy(liste_themes[numero_theme].article[numero_article], "VIDE");
+  return 0;
+}
+
+void afficher_liste_themes()
+{
+  if(liste_themes == NULL)
+  {
+    perror("Liste de thèmes non initialisé\n");
+    exit(EXIT_FAILURE);
+  }
+
+  int i, j;
+  for(i=1; i<=nb_themes; i++)
+  {
+    for(j=1; j<MAX_ARTICLE; j++)
+    {
+      printf("Thème %d | Article %d: %s\n", i, j, liste_themes[i].article[j]);
+    }
+    printf("\n");
+  } 
+}
+
+void suppr_smp()
+{
+    shmctl(memoire_p, IPC_RMID, NULL);
 }

@@ -10,7 +10,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>
-#include <errno.h>
+
+#define MAX_ARTICLE 20
 
 /*********************************/
 /*        Coding Party           */
@@ -24,15 +25,25 @@
 /* 2 pour une publication */
 /* 3 pour une suppression */
 
+typedef struct
+{
+  int numero;
+  char article[MAX_ARTICLE][5];
+}theme;
+theme* liste_themes;    //La liste des thèmes
+
 void terminaison_fils(int signal);
 char* demande_archive();
 void le_gros_sigaction();
 char* generer_texte_aleatoire();
+void initialiser_liste_themes();
+void stockage_smp(char* fichier, int code);
+void afficher_liste_themes();
 
 pid_t *liste_pid;
 int nb_archivistes;
 int nb_themes;
-int memoire_p;
+int memoire_p = -1;
 
 int main(int argc, char* argv[], char* envp[])
 {
@@ -224,7 +235,6 @@ void le_gros_sigaction()
     }
 }
 
-
 char* generer_texte_aleatoire()
 {
     char *chaine=NULL;
@@ -236,4 +246,83 @@ char* generer_texte_aleatoire()
     }
     chaine[4]='\0';
     return chaine;
+}
+
+/* Fonctions SMP */
+
+void initialiser_liste_themes()
+{
+  liste_themes = NULL;
+  liste_themes = (theme*) malloc(nb_themes * sizeof(theme));
+  if (liste_themes == NULL)
+  {
+    perror("malloc");
+  }
+  printf("Liste thèmes créé avec succès\n");
+
+  int i, j;
+  for(i=1; i<=nb_themes; i++) //On rempli tous les thèmes
+  {
+    liste_themes[i].numero = i;
+    
+    for(j=1; j<(MAX_ARTICLE/2); j++)  //On rempli la moitié des articles de ce thème
+    {
+      strcpy(liste_themes[i].article[j], generer_texte_aleatoire());
+    }
+    for(j=(MAX_ARTICLE/2); j<=MAX_ARTICLE; j++)  //On rempli l'autre moitié avec VIDE
+    {
+      strcpy(liste_themes[i].article[j], "VIDE");
+    }
+    
+  }
+
+  printf("Liste des thèmes rempli avec succès\n");
+}
+
+void stockage_smp(char* fichier, int code)
+{
+  key_t cle = ftok("test_smh.c", 'z');
+  if (cle == -1)
+  {
+    perror("ftok");
+    exit(EXIT_FAILURE);
+  }
+
+  char* charal;
+  int status;
+
+  if((memoire_p = shmget(cle, nb_themes*sizeof(theme), IPC_CREAT | 0660)) != -1)
+  {
+    if((charal = shmat(memoire_p, 0, 0)))
+    {
+      *charal = 'a';
+
+      printf("Char: %c\n", *charal);
+      
+      shmdt(&charal);
+    }
+  }
+  else
+  {
+      perror("smhget a renvoyé -1...\n");
+  }
+}
+
+void afficher_liste_themes()
+{
+  if(liste_themes == NULL)
+  {
+    perror("Liste de thèmes non initialisé\n");
+    exit(EXIT_FAILURE);
+  }
+
+  int i, j;
+  for(i=1; i<=nb_themes; i++)
+  {
+    for(j=1; j<MAX_ARTICLE; j++)
+    {
+      printf("Thème %d | Article %d: %s\n", i, j, liste_themes[i].article[j]);
+    }
+    printf("\n");
+  } 
 }
