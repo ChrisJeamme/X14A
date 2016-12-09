@@ -73,8 +73,7 @@ int main(int argc, char* argv[])
 		
         initialiser_liste_themes();
         recup_tout_smp();
-		vrai_ajout_article(1, "zizi");
-        afficher_liste_themes();
+		//vrai_ajout_article(2, "zizi");
 
       int semaphore = 0;
 
@@ -105,7 +104,7 @@ int main(int argc, char* argv[])
 
             if (message.requete == 'p') //publication
             {
-				ajout_article(message.theme, message.texte);
+				vrai_ajout_article(message.theme, message.texte);
             }
 			else if (message.requete == 'c') //consultation
 			{
@@ -246,7 +245,6 @@ int modif_article(int numero_theme, int numero_article, char* article)
   return j; //On renvoi le numéro de l'article dans le thème
 }
 
-
 /* Fonction de modification du SMP avec update de liste_themes */
 int vrai_ajout_article(int numero_theme, char* article)
 {
@@ -254,6 +252,12 @@ int vrai_ajout_article(int numero_theme, char* article)
 
   int j;
   
+  if(strlen(article)!=4)
+  {
+	  fprintf(stderr,"Article incorrect\n");
+	  return -1;
+  }
+
   if(numero_theme < 1 || numero_theme > nb_themes)
   {
     fprintf(stderr,"Numero de thème incorrect\n");
@@ -290,6 +294,7 @@ int vrai_ajout_article(int numero_theme, char* article)
 				}
 				shmdt(&article_smp);
 			}
+			recup_tout_smp();	//On update la liste des thèmes
 		}
 		else
 		{
@@ -299,7 +304,6 @@ int vrai_ajout_article(int numero_theme, char* article)
   
   return j; //On renvoi le numéro de l'article dans le thème
 }
-
 
 /* Fonction de modification de liste_themes */
 int suppr_article(int numero_theme, int numero_article)
