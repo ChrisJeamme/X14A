@@ -22,7 +22,10 @@
 struct contenu
 {
     long type;
-    char texte[1000];
+    char requete;
+    int theme;
+    char texte[6];
+    pid_t identite;
 };
 
 int main(int argc, char* argv[])
@@ -44,8 +47,6 @@ int main(int argc, char* argv[])
 
     if (requete == 'c' || requete == 'e')     //Consultation ou Effacement
     {
-        int num_article = atoi(argv[4]);    //Numéro de l'article à consulter
-        
         /*Création d'une clé */
         cle = ftok("requete_journaliste", 'a');
 
@@ -60,8 +61,11 @@ int main(int argc, char* argv[])
         /*Création du message*/
         struct contenu message;
         message.type=1;
-        strcpy(message.texte, "coucou c'est moi !\n");
-        int taille = strlen(message.texte);
+        message.requete = requete;
+        message.theme = num_theme;
+        strcpy(message.texte, argv[4]);
+        message.identite = getpid();
+        int taille = sizeof(struct contenu)-1;
 
         /*Envoi du message*/
         int envoi = msgsnd(id_file, &message, taille+1, 0);
@@ -97,8 +101,11 @@ int main(int argc, char* argv[])
         /*Création du message*/
         struct contenu message;
         message.type=1;
-        strcpy(message.texte, "coucou c'est moi !\n");
-        int taille = strlen(message.texte);
+        message.requete = requete;
+        message.theme = num_theme;
+        strcpy(message.texte, argv[4]);
+        message.identite = getpid();
+        int taille = sizeof(struct contenu)-1;
 
         /*Envoi du message*/
         int envoi = msgsnd(id_file, &message, taille+1, 0);

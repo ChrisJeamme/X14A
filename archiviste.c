@@ -23,7 +23,10 @@ int* recup_smp(char id);
 struct contenu
 {
     long type;
-    char texte[1000];
+    char requete;
+    int theme;
+    char texte[6];
+    pid_t identite;
 };
 
 int main(int argc, char* argv[])
@@ -68,7 +71,10 @@ int main(int argc, char* argv[])
                 perror("Erreur de lecture dans la file");
                 exit(EXIT_FAILURE);
             }
-            printf("archiviste : Message bien reçu : %s", message.texte);
+            printf("archiviste : Message bien reçu : \nrequete : %c\ntheme : %d\ntexte : %s\npid journaliste : %d\n",message.requete, message.theme, message.texte, message.identite);
+
+            /*Vérification*/
+            
         }
 
     
