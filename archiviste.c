@@ -101,9 +101,29 @@ int main(int argc, char* argv[])
                 perror("Erreur de lecture dans la file");
                 exit(EXIT_FAILURE);
             }
-            printf("archiviste %d: Message bien reçu : \nrequete : %c\ntheme : %d\ntexte : %s\npid journaliste : %d\n",numero_ordre, message.requete, message.theme, message.texte, message.identite);
+            //printf("archiviste %d: Message bien reçu : \nrequete : %c\ntheme : %d\ntexte : %s\npid journaliste : %d\n",numero_ordre, message.requete, message.theme, message.texte, message.identite);
 
-            /*Vérification*/
+            if (message.requete == 'p') //publication
+            {
+				ajout_article(message.theme, message.texte);
+            }
+			else if (message.requete == 'c') //consultation
+			{
+				if (strcmp(liste_themes[message.theme].article[atoi(message.texte)], "VIDE")!=0)
+				{
+					//envoyer message au journaliste avec le contenu de l'article
+				}
+				else 
+				{
+					//envoyer message lui disant qu'il n'y a pas cet article.
+				}
+			}
+			else // effacement
+			{
+				suppr_article(message.theme, atoi(message.texte));
+			}
+			afficher_liste_themes();
+            
             
         }
 
