@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
             exit(-1);
         }
     
-    // printf("\nprog : %s nb_archivistes %s requete : %s \ntheme : %s texte : %s\n",argv[0],argv[1],argv[2], argv[3], argv[4]);
+    printf("\nnb_archivistes %s \nrequete : %s \ntheme : %s \ntexte : %s\n\n",argv[1],argv[2], argv[3], argv[4]);
 
     int nb_archivistes = atoi(argv[1]);
 

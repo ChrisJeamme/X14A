@@ -37,7 +37,8 @@ int memoire_p;
 int main(int argc, char* argv[], char* envp[])
 {
     srand(time(NULL));
-    
+
+
     /*Vérification du nombre d'arguments*/
         if (argc != 3)
         {
@@ -123,22 +124,22 @@ int main(int argc, char* argv[], char* envp[])
         {
             pid_t pid = fork();
             char *requete = demande_archive();
-            char theme[10] = "3";
+            char theme_concerne[10];
             int num_theme = rand()%nb_themes+1; //Thème aléatoire 
-            sprintf(theme, "%d", num_theme);    //Convertion de num_theme en chaine pour le transmettre au journaliste en parametre
+            sprintf(theme_concerne, "%d", num_theme);    //Convertion de num_theme en chaine pour le transmettre au journaliste en parametre
 
-            char *texte;
+            char texte[10]="";
             if (requete[0]=='p')    //publication
             {
-                texte = "zizi";     // texte de l'article
+                char *chaine = generer_texte_aleatoire();
+                strcpy(texte,chaine);     // texte de l'article
             }
             else 
             {
                 int num_article = rand()%15+1;  //numéro d'article aléatoire
-                //sprintf(texte, "%d", num_article);  //convertion en chaine
-                texte="12";
+                sprintf(texte, "%d", num_article);  //convertion en chaine
             }
-
+            
             if(pid == -1)   //Erreur
             {
                 fprintf(stderr, "Erreur de fork\n");
@@ -147,7 +148,7 @@ int main(int argc, char* argv[], char* envp[])
             if(pid == 0)    //Fils
             {
                 //printf("Lancement du fils %d\n", pid);
-                char* arguments[] = {"journalistes", argv[1], requete, theme, texte,NULL}; //nombre d'archivistes, requete, theme de l'article, texte ou num_article
+                char* arguments[] = {"journalistes", argv[1], requete, theme_concerne, texte,NULL}; //nombre d'archivistes, requete, theme de l'article, texte ou num_article
                 execve("journalistes", arguments, envp);
                 while(1);
             }
@@ -223,13 +224,16 @@ void le_gros_sigaction()
     }
 }
 
-char *generer_texte_aleatoire()
+
+char* generer_texte_aleatoire()
 {
-    char *chaine="aaaa";
+    char *chaine=NULL;
+    chaine=malloc(4*sizeof(char));
     int i;
-    for (i=0; i<4; i++)
+    for(i=0; i<4; i++)
     {
-        chaine[i]= (char)(rand()%(122-97)+97);
+        chaine[i]=rand()%(122-97)+97;   //lettre minuscule aleatoire.
     }
+    chaine[4]='\0';
     return chaine;
 }
