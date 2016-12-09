@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 		
         initialiser_liste_themes();
         recup_tout_smp();
-		//vrai_ajout_article(2, "zizi");
+		//vrai_ajout_article(2, "test");
 
 
     /* Récupération file de messages*/
@@ -107,14 +107,14 @@ int main(int argc, char* argv[])
             }
 			else if (message.requete == 'c') //consultation
 			{
-				if (strcmp(liste_themes[message.theme].article[atoi(message.texte)], "VIDE")!=0)
-				{
-					printf("Votre article est : %s\n", liste_themes[message.theme].article[atoi(message.texte)]);
-				}
-				else 
-				{
-					printf("Il n'y a pas d'article numero %d dans le theme %d\n", atoi(message.texte), message.theme);
-				}
+        if (strcmp(liste_themes[message.theme].article[atoi(message.texte)], "VIDE")!=0)
+        {
+          printf("Votre article est : %s\n", liste_themes[message.theme].article[atoi(message.texte)]);
+        }
+        else 
+        {
+          printf("Il n'y a pas d'article numero %d dans le theme %d\n", atoi(message.texte), message.theme);
+        }
 			}
 			else // effacement
 			{
@@ -287,7 +287,6 @@ int vrai_ajout_article(int numero_theme, char* article)
 			if((article_smp = shmat(memoire_p, 0, 0)))
 			{
 				int i;
-				printf("On modifie %d\n", j*4);
 				for(i=0; i<5; i++)
 				{
 					article_smp[j*4+i] = article[i];
