@@ -19,10 +19,6 @@
 /*       BRUYERE Dimitri         */
 /*********************************/
 
-/* Retourne aléatoirement le type de la demande d'archive */
-/* 1 pour une consultation */
-/* 2 pour une publication */
-/* 3 pour une suppression */
 
 void terminaison_fils(int signal);
 char* demande_archive();
@@ -193,21 +189,6 @@ void le_gros_sigaction()
     s_terminaison_fils.sa_handler = &terminaison_fils;   //Adresse fonction du gestionnaire
     s_terminaison_fils.sa_flags = 0;            //Ignoré
     sigemptyset(&s_terminaison_fils.sa_mask);   //Aucun signaux masqué => ensemble signal vide dans sa_mask
-
-                /*//Création de l'ensemble de signaux à écouter
-                sigset_t signaux;
-                sigemptyset(&signaux);
-                sigfillset(&signaux);
-                if(!sigismember(&signaux, SIGKILL) || !sigismember(&signaux, SIGCHLD))
-                {
-                    fprintf(stderr, "Erreur improbable\n");
-                    exit(-1);
-                }
-                sigdelset(&signaux, SIGKILL);
-                sigdelset(&signaux, SIGCHLD);
-                sigwaitinfo(&signaux, NULL);*/
-
-    //Algorithme de pataras mais au moins on ne fait pas un seul for avec un if à chaque boucle !
     
     int i;
     for(i=1; i<9; i++)  //On coupe à SIGKILL
@@ -236,4 +217,19 @@ char* generer_texte_aleatoire()
     }
     chaine[4]='\0';
     return chaine;
+}
+
+int file_message()
+{
+    /*Création d'une clé */
+        key_t cle = ftok("requete_journaliste", 'a');
+
+    /*Création d'une file de message*/
+        int id_file = msgget(cle, 0666 | IPC_CREAT | IPC_EXCL);
+        if (id_file == -1)
+        {
+            perror("Erreur de création de la file de messages");
+            exit(EXIT_FAILURE);
+        }
+        return id_file;
 }
