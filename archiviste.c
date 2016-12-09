@@ -47,6 +47,7 @@ typedef struct
 theme* liste_themes;
 
 
+
 int main(int argc, char* argv[])
 {
     /* Vérification du nombre d'arguments */
@@ -66,6 +67,8 @@ int main(int argc, char* argv[])
         
         //recup_tout_smp();
         recup_smp("initial.c", 'z');   //Dans memoire_p
+
+      int semaphore = 0;
 
     /* Récupération file de messages*/
 

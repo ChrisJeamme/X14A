@@ -28,6 +28,8 @@ struct contenu
     pid_t identite;
 };
 
+
+
 int main(int argc, char* argv[])
 {
     /*Vérification du nombre d'arguments*/
@@ -39,6 +41,7 @@ int main(int argc, char* argv[])
     
     printf("\nnb_archivistes %s \nrequete : %s \ntheme : %s \ntexte : %s\n\n",argv[1],argv[2], argv[3], argv[4]);
 
+    int semaphore;
     int nb_archivistes = atoi(argv[1]);
 
     char requete = argv[2][0];
