@@ -21,7 +21,7 @@
 /*********************************/
 
 void recup_tout_smp();
-void recup_smp(char* fichier, int code, int numero_theme);
+void recup_smp(int code);
 int ajout_article(int numero_theme, char* article);
 int suppr_article(int numero_theme, int numero_article);
 void afficher_liste_themes();
@@ -71,8 +71,8 @@ int main(int argc, char* argv[])
 
 		//afficher_liste_themes();
 
-        //recup_tout_smp();
-        recup_smp("initial.c", 'z', 1);   //Dans memoire_p
+        recup_tout_smp();
+        //recup_smp(2);   //Dans memoire_p
 
         afficher_liste_themes();
 
@@ -115,24 +115,17 @@ int main(int argc, char* argv[])
 void recup_tout_smp()
 {
   int i;
-  char nom[3];
   for(i=1; i<=nb_themes; i++)
   {
-    sprintf(nom,"%d",i);
-    printf("On veut récupérer recup_smp(%s, %d)", nom, i);
-    //recup_smp(nom,i);
+    recup_smp(i+1);
   }
 }
 
-void recup_smp(char* fichier, int code, int numero_theme)
+void recup_smp(int numero_theme)
 {
-  key_t cle_m = ftok(fichier, code);
-  if (cle_m == -1)
-  {
-    perror("ftok");
-    exit(EXIT_FAILURE);
-  }
+  key_t cle_m = numero_theme;
   
+  numero_theme--;
   char* article;
 
   if((memoire_p = shmget(cle_m, 0, 0)) != -1)
